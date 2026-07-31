@@ -29,7 +29,7 @@
                             light: 'rgba(255, 255, 255, 0.4)',
                             dark: 'rgba(255, 255, 255, 0.1)',
                             border: 'rgba(255, 255, 255, 0.5)',
-                            text: '#1e293b' // slate-800
+                            text: '#1e293b'
                         }
                     }
                 }
@@ -41,7 +41,7 @@
             font-family: 'Poppins', sans-serif;
             background-color: #f3f4f6;
             -webkit-tap-highlight-color: transparent; 
-            overflow: hidden; /* Prevent body scroll, handle scroll in main */
+            overflow: hidden; 
         }
         
         /* Animated Background Blob/Mesh */
@@ -87,7 +87,7 @@
         }
         .glass-input:focus {
             background: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.5); /* Purple outline */
+            box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.5); 
             outline: none;
         }
 
@@ -120,23 +120,15 @@
         @media print {
             .bg-mesh, .no-print { display: none !important; }
             body { background: white !important; }
-            .glass-panel { 
-                background: white !important; 
-                backdrop-filter: none !important; 
-                -webkit-backdrop-filter: none !important;
-                border: 1px solid #e2e8f0 !important; 
-                box-shadow: none !important;
-                color: black !important;
-            }
             .print-area, .print-area * { visibility: visible; color: black !important; }
             #printWrapper { position: absolute; left: 0; top: 0; width: 100%; }
-            #harian, #dashboard, #pencarian, nav { display: none !important; }
+            #harian, #dashboard, #pencarian, nav, header { display: none !important; }
         }
     </style>
 </head>
 <body class="h-screen flex flex-col text-slate-800">
 
-    <!-- Latar Belakang Mesh Gradient (Glass Core) -->
+    <!-- Latar Belakang Mesh Gradient -->
     <div class="bg-mesh">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
@@ -152,7 +144,7 @@
             <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-700 to-indigo-700 tracking-tight">JurnalHarian</h1>
         </div>
         
-        <!-- Action Buttons (Export PDF) - Hanya muncul di Mingguan/Bulanan -->
+        <!-- Action Buttons (Export PDF) -->
         <div id="actionButtons" class="hidden gap-2">
             <button onclick="exportPDF()" class="glass-button px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5">
                 <i class="fas fa-file-export"></i> <span>Ekspor PDF</span>
@@ -204,7 +196,6 @@
 
         <!-- ================= HARIAN ================= -->
         <div id="tab-harian" class="tab-content max-w-2xl mx-auto">
-            <!-- Glass Date Picker -->
             <div class="glass-panel p-4 rounded-3xl mb-6 flex items-center justify-between no-print relative">
                 <div class="flex flex-col">
                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 px-1">Pilih Tanggal</label>
@@ -228,7 +219,6 @@
                 <input type="date" id="inputDateMingguan" class="glass-input rounded-xl p-2.5 text-sm font-semibold w-40 cursor-pointer">
             </div>
 
-            <!-- Area Khusus Export -->
             <div id="mingguanPrintArea" class="glass-panel rounded-3xl p-6">
                 <div class="text-center mb-8 border-b border-slate-300/30 pb-4">
                     <h2 class="text-2xl font-bold text-slate-800">Jadwal Mingguan</h2>
@@ -241,8 +231,8 @@
             </div>
         </div>
 
-        <!-- ================= BULANAN ================= -->
-        <div id="tab-bulanan" class="tab-content max-w-5xl mx-auto">
+        <!-- ================= BULANAN (UPDATE NO SCROLL / CARD LIST) ================= -->
+        <div id="tab-bulanan" class="tab-content max-w-3xl mx-auto">
             <div class="glass-panel p-4 rounded-3xl mb-6 flex items-center justify-between no-print">
                 <div class="flex flex-col">
                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 px-1">Pilih Bulan</label>
@@ -251,27 +241,15 @@
                 <input type="month" id="inputMonthBulanan" class="glass-input rounded-xl p-2.5 text-sm font-semibold w-44 cursor-pointer">
             </div>
 
-            <div id="bulananPrintArea" class="glass-panel rounded-3xl p-6">
+            <div id="bulananPrintArea" class="glass-panel rounded-3xl p-5 md:p-6">
                 <div class="text-center mb-6 border-b border-slate-300/30 pb-4">
                     <h2 class="text-2xl font-bold text-slate-800">Rekapitulasi Jurnal</h2>
                     <p class="text-slate-500 font-medium mt-1" id="bulananTitle">Januari</p>
                 </div>
 
-                <div class="overflow-x-auto rounded-2xl border border-white/40">
-                    <table class="w-full text-left border-collapse whitespace-nowrap">
-                        <thead>
-                            <tr class="bg-white/40">
-                                <th class="p-4 text-sm font-bold text-slate-700">Tanggal</th>
-                                <th class="p-4 text-sm font-bold text-slate-700">Waktu</th>
-                                <th class="p-4 text-sm font-bold text-slate-700">Kelas</th>
-                                <th class="p-4 text-sm font-bold text-slate-700">Kegiatan</th>
-                                <th class="p-4 text-sm font-bold text-slate-700">Materi Pelajaran</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bulananTableBody" class="divide-y divide-white/40">
-                            <!-- Diisi JS -->
-                        </tbody>
-                    </table>
+                <!-- MENGGANTI TABEL MENJADI CARD LIST AGAR TIDAK TERPOTONG -->
+                <div id="bulananContainer" class="flex flex-col gap-4">
+                    <!-- Diisi JS dengan Kartu (Card) Responsif -->
                 </div>
             </div>
         </div>
@@ -285,7 +263,7 @@
             
             <div class="glass-panel rounded-3xl p-6">
                 <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-200/50 pb-2">Hasil Pencarian</h3>
-                <div id="searchResult" class="space-y-3">
+                <div id="searchResult" class="space-y-4">
                     <div class="text-slate-400 text-center py-6 font-medium italic">Ketik untuk mencari materi.</div>
                 </div>
             </div>
@@ -293,7 +271,7 @@
 
     </main>
 
-    <!-- FLOATING BOTTOM NAVIGATION (Glass Style) -->
+    <!-- FLOATING BOTTOM NAVIGATION -->
     <nav class="fixed bottom-6 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-[500px] z-40 no-print">
         <div class="glass-panel rounded-3xl px-2 py-2 flex justify-between items-center shadow-2xl">
             <button onclick="switchTab('dashboard')" class="nav-btn relative flex flex-col items-center justify-center flex-1 py-2 rounded-2xl transition-all duration-300 group" data-target="dashboard">
@@ -332,12 +310,31 @@
         <span id="toastMsg">Berhasil disimpan!</span>
     </div>
 
+    <!-- HIDDEN AREA FOR PDF GENERATION (Tabel Formal Cetak) -->
+    <div id="pdfWrapper" class="hidden">
+        <div id="printArea" class="p-8 font-sans bg-white text-black" style="background: white !important; color: black !important;">
+            <h1 id="printTitle" class="text-2xl font-bold mb-4 text-center border-b pb-4 border-gray-300">Rekap Jurnal</h1>
+            <table class="w-full text-left border-collapse mt-4 text-sm">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 p-2">Hari/Tanggal</th>
+                        <th class="border border-gray-300 p-2">Waktu</th>
+                        <th class="border border-gray-300 p-2">Kelas</th>
+                        <th class="border border-gray-300 p-2">Kegiatan</th>
+                        <th class="border border-gray-300 p-2">Materi</th>
+                    </tr>
+                </thead>
+                <tbody id="printBody"></tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Database from LocalStorage
+        // Database
         let db = JSON.parse(localStorage.getItem('jurnalFasilitator')) || {};
         
-        // Data Jadwal Tetap
+        // Data Jadwal
         const SCHEDULE = {
             1: [{ time: '12.30–13.00', title: 'Sholat Dzuhur Berjama’ah', kelas: 'Kelas 4–6', type: 'fixed' }],
             2: [{ time: '07.30–08.00', title: 'Materi Pelajaran', kelas: 'Kelas 2', type: 'input' }],
@@ -351,7 +348,7 @@
                 { time: '08.00–08.30', title: 'Materi Pelajaran', kelas: 'Kelas 6', type: 'input' }
             ],
             6: [{ time: '07.30–08.00', title: 'Materi Pelajaran', kelas: 'Kelas 1', type: 'input' }],
-            0: [] // Ahad kosong
+            0: [] // Ahad
         };
 
         const HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -390,7 +387,7 @@
             switchTab('harian'); 
         });
 
-        // --- NAVIGATION & UI ---
+        // --- NAVIGATION ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
@@ -402,7 +399,6 @@
                 actionBtns.classList.add('hidden'); actionBtns.classList.remove('flex');
             }
 
-            // Update Glass Navigation Styling
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 const indicator = btn.querySelector('.nav-indicator');
                 const icon = btn.querySelector('.icon');
@@ -430,7 +426,6 @@
             if(tabId === 'mingguan') renderMingguan();
             if(tabId === 'bulanan') renderBulanan();
             
-            // smooth scroll to top
             document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -445,7 +440,7 @@
             }, 2500);
         }
 
-        // --- CORE DATA LOGIC ---
+        // --- CORE DATA ---
         function saveData(date, time) {
             const inputEl = document.getElementById(`input_${time}`);
             const val = inputEl.value.trim();
@@ -485,7 +480,6 @@
         // --- DASHBOARD ---
         function renderDashboard() {
             document.getElementById('dashToday').innerText = formatIndo(formatYMD(new Date()));
-            
             let countAll = 0; let countMonth = 0;
             const currentYM = formatYMD(new Date()).substring(0, 7);
 
@@ -526,7 +520,7 @@
             }
         }
 
-        // --- HARIAN (GLASS CARDS) ---
+        // --- HARIAN ---
         function renderHarian() {
             const dateStr = document.getElementById('inputDateHarian').value;
             const isToday = dateStr === formatYMD(new Date());
@@ -549,15 +543,13 @@
             schedules.forEach(s => {
                 const card = document.createElement('div');
                 card.className = "glass-panel p-5 rounded-3xl overflow-hidden relative";
-                
-                // Dekorasi bulatan blur di dalam card
                 let decor = `<div class="absolute -right-10 -top-10 w-32 h-32 ${s.type==='fixed'?'bg-slate-300':'bg-purple-300'} rounded-full blur-2xl opacity-40 pointer-events-none"></div>`;
 
                 let header = `
                     <div class="flex justify-between items-start relative z-10">
                         <div>
                             <div class="flex gap-2 mb-2">
-                                <span class="bg-white/60 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-lg shadow-sm backdrop-blur-md border border-white/50">${s.time}</span>
+                                <span class="bg-white/60 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-lg shadow-sm border border-white/50">${s.time}</span>
                                 <span class="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 text-[11px] font-bold px-2 py-1 rounded-lg shadow-sm border border-white/50">${s.kelas}</span>
                             </div>
                             <h3 class="text-lg font-bold text-slate-800 leading-tight">${s.title}</h3>
@@ -644,14 +636,14 @@
             }
         }
 
-        // --- BULANAN ---
+        // --- BULANAN (UPDATE: CARD LAYOUT NO SCROLL) ---
         function renderBulanan() {
             const ym = document.getElementById('inputMonthBulanan').value;
             const [year, month] = ym.split('-');
             document.getElementById('bulananTitle').innerText = `${BULAN[parseInt(month)-1]} ${year}`;
             
-            const tbody = document.getElementById('bulananTableBody');
-            tbody.innerHTML = '';
+            const container = document.getElementById('bulananContainer');
+            container.innerHTML = '';
             
             const numDays = new Date(year, month, 0).getDate();
             let hasData = false;
@@ -667,22 +659,35 @@
                 if (schedules && schedules.length > 0) {
                     schedules.forEach(s => {
                         hasData = true;
-                        let val = (s.type === 'input') ? ((db[dateStr] && db[dateStr][s.time]) ? db[dateStr][s.time] : 'Kosong') : 'Rutin';
-                        let valClass = (s.type === 'input' && db[dateStr] && db[dateStr][s.time]) ? 'text-purple-700 font-bold' : (s.type === 'input'?'text-rose-500 font-medium italic':'text-slate-400 font-medium');
+                        let val = (s.type === 'input') ? ((db[dateStr] && db[dateStr][s.time]) ? db[dateStr][s.time] : 'Kosong (Belum Diisi)') : 'Kegiatan Rutin (Otomatis)';
+                        let valClass = (s.type === 'input' && db[dateStr] && db[dateStr][s.time]) ? 'text-purple-700 font-bold' : (s.type === 'input'?'text-rose-500 font-medium italic':'text-slate-500 font-medium italic');
 
-                        tbody.innerHTML += `
-                            <tr class="hover:bg-white/20 transition-colors">
-                                <td class="p-4 text-sm font-semibold text-slate-800">${d} ${BULAN[dateObj.getMonth()]}</td>
-                                <td class="p-4 text-sm font-medium text-slate-600"><span class="bg-white/50 px-2 py-1 rounded-lg border border-white/40">${s.time}</span></td>
-                                <td class="p-4 text-sm font-bold text-blue-600 bg-blue-50/30">${s.kelas}</td>
-                                <td class="p-4 text-sm font-bold text-slate-800">${s.title}</td>
-                                <td class="p-4 text-sm ${valClass}">${val}</td>
-                            </tr>
+                        // Desain Kartu (Card) menggantikan Tabel
+                        container.innerHTML += `
+                            <div class="bg-white/40 backdrop-blur-md border border-white/60 p-4 rounded-2xl shadow-sm hover:bg-white/50 transition-colors">
+                                <div class="flex justify-between items-center mb-2 border-b border-white/40 pb-2">
+                                    <div class="font-bold text-slate-800 text-sm flex items-center">
+                                        <i class="far fa-calendar-alt text-purple-500 mr-2"></i> ${d} ${BULAN[dateObj.getMonth()]}
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-bold text-slate-600 bg-white/60 px-2 py-0.5 rounded border border-white/40 shadow-sm">${s.time}</span>
+                                        <span class="text-[10px] font-bold text-blue-700 bg-blue-100/60 px-2 py-0.5 rounded shadow-sm">${s.kelas}</span>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Kegiatan</p>
+                                    <p class="font-bold text-slate-800 text-[15px] leading-tight">${s.title}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Materi Tersimpan</p>
+                                    <p class="text-sm ${valClass}">${val}</p>
+                                </div>
+                            </div>
                         `;
                     });
                 }
             }
-            if(!hasData) tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 font-medium italic bg-white/20">Tidak ada jadwal tercatat.</td></tr>`;
+            if(!hasData) container.innerHTML = `<div class="p-8 text-center text-slate-500 font-medium italic bg-white/20 rounded-2xl">Tidak ada rekam jejak jadwal bulan ini.</div>`;
         }
 
         // --- PENCARIAN ---
@@ -723,35 +728,84 @@
             }
         }
 
-        // --- PDF EXPORT (Clean Print Style) ---
+        // --- PDF EXPORT (Cerdas: Output PDF tetap dalam bentuk Tabel Formal) ---
+        function buildPrintHTML(type) {
+            const tbody = document.getElementById('printBody');
+            tbody.innerHTML = '';
+            let targetDates = [];
+            let titleText = '';
+
+            if (type === 'mingguan') {
+                const dateStr = document.getElementById('inputDateMingguan').value;
+                const start = getStartOfWeek(dateStr);
+                titleText = `Jadwal Mingguan (${formatIndo(formatYMD(start))})`;
+                for (let i = 1; i <= 6; i++) {
+                    const d = new Date(start); d.setDate(d.getDate() + (i-1));
+                    targetDates.push({ dateObj: d, dateStr: formatYMD(d), dayIdx: i });
+                }
+            } else {
+                const ym = document.getElementById('inputMonthBulanan').value;
+                const [y, m] = ym.split('-');
+                titleText = `Rekap Bulanan (${BULAN[parseInt(m)-1]} ${y})`;
+                const numDays = new Date(y, m, 0).getDate();
+                for (let d = 1; d <= numDays; d++) {
+                    const dt = new Date(y, m-1, d);
+                    if(dt.getDay() !== 0) targetDates.push({ dateObj: dt, dateStr: formatYMD(dt), dayIdx: dt.getDay() });
+                }
+            }
+
+            document.getElementById('printTitle').innerText = titleText;
+
+            targetDates.forEach(item => {
+                const schedules = SCHEDULE[item.dayIdx];
+                if(schedules) {
+                    schedules.forEach(s => {
+                        let materi = s.type === 'fixed' ? '-' : ((db[item.dateStr] && db[item.dateStr][s.time]) ? db[item.dateStr][s.time] : '');
+                        // Isi tabel rahasia untuk di-print
+                        tbody.innerHTML += `
+                            <tr>
+                                <td class="border border-gray-300 p-2">${HARI[item.dayIdx]}, ${item.dateObj.getDate()} ${BULAN[item.dateObj.getMonth()]}</td>
+                                <td class="border border-gray-300 p-2">${s.time}</td>
+                                <td class="border border-gray-300 p-2">${s.kelas}</td>
+                                <td class="border border-gray-300 p-2">${s.title}</td>
+                                <td class="border border-gray-300 p-2 font-semibold">${materi}</td>
+                            </tr>
+                        `;
+                    });
+                }
+            });
+        }
+
         function exportPDF() {
             const activeTab = document.querySelector('.tab-content.active').id;
-            let element, opt;
+            let type = '';
             
-            // Note: html2pdf will capture based on @media print CSS rules naturally
-            if (activeTab === 'tab-mingguan') {
-                element = document.getElementById('mingguanPrintArea');
-                opt = {
-                    margin:       0.4,
-                    filename:     `Mingguan_${document.getElementById('inputDateMingguan').value}.pdf`,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2, useCORS: true },
-                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
-                };
-            } else if (activeTab === 'tab-bulanan') {
-                element = document.getElementById('bulananPrintArea');
-                opt = {
-                    margin:       0.4,
-                    filename:     `Bulanan_${document.getElementById('inputMonthBulanan').value}.pdf`,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2, useCORS: true },
-                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-                };
-            } else {
-                return;
-            }
+            if (activeTab === 'tab-mingguan') type = 'mingguan';
+            else if (activeTab === 'tab-bulanan') type = 'bulanan';
+            else return;
+
+            // 1. Bangun tabel di background
+            buildPrintHTML(type);
+
+            // 2. Targetkan area Print
+            const element = document.getElementById('printArea');
             
-            html2pdf().set(opt).from(element).save();
+            // 3. Tampilkan sebentar agar terdeteksi PDF maker
+            document.getElementById('pdfWrapper').classList.remove('hidden');
+            
+            const opt = {
+                margin:       0.4,
+                filename:     `Jurnal_${type}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: (type === 'mingguan' ? 'landscape' : 'portrait') }
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                // 4. Sembunyikan kembali
+                document.getElementById('pdfWrapper').classList.add('hidden');
+                showToast('Mulai mengunduh PDF...');
+            });
         }
     </script>
 </body>
