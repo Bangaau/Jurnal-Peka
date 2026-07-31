@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jurnal Harian Fasilitator</title>
+    <title>Jurnal Harian - Glass UI</title>
     
     <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -25,14 +25,11 @@
                         poppins: ['Poppins', 'sans-serif'],
                     },
                     colors: {
-                        brand: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            200: '#bbf7d0',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                            800: '#166534',
+                        glass: {
+                            light: 'rgba(255, 255, 255, 0.4)',
+                            dark: 'rgba(255, 255, 255, 0.1)',
+                            border: 'rgba(255, 255, 255, 0.5)',
+                            text: '#1e293b' // slate-800
                         }
                     }
                 }
@@ -42,218 +39,300 @@
     <style>
         body { 
             font-family: 'Poppins', sans-serif;
-            -webkit-tap-highlight-color: transparent; /* Hilangkan highlight biru saat di tap di HP */
+            background-color: #f3f4f6;
+            -webkit-tap-highlight-color: transparent; 
+            overflow: hidden; /* Prevent body scroll, handle scroll in main */
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
         
-        /* Custom scrollbar for webkit */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        /* Print Styles */
-        @media print {
-            .no-print { display: none !important; }
-            .print-area { width: 100% !important; padding: 0 !important; margin: 0 !important; overflow: visible !important;}
-            body { background: white; height: auto !important; }
-            .shadow-sm, .shadow-md { box-shadow: none !important; border: 1px solid #e5e7eb; }
+        /* Animated Background Blob/Mesh */
+        .bg-mesh {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            background: linear-gradient(to bottom right, #fdfbfb, #ebedee);
+            overflow: hidden;
+        }
+        .shape {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.8;
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+        .shape-1 { background: #d8b4fe; width: 400px; height: 400px; top: -10%; left: -10%; animation-delay: 0s; }
+        .shape-2 { background: #93c5fd; width: 500px; height: 500px; bottom: -20%; right: -10%; animation-delay: -5s; }
+        .shape-3 { background: #fbcfe8; width: 300px; height: 300px; top: 40%; left: 40%; animation-delay: -10s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
         }
 
-        /* Fix Date Input Appearance on Mobile Safari */
-        input[type="date"], input[type="month"] {
-            min-height: 3rem;
+        /* Glassmorphism Core Classes */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            color: #1e293b;
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.5); /* Purple outline */
+            outline: none;
+        }
+
+        .glass-button {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.8) 0%, rgba(139, 92, 246, 0.9) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .glass-button:active {
+            transform: scale(0.96);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease forwards; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hide scrollbars */
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Print formatting - strip glass effects */
+        @media print {
+            .bg-mesh, .no-print { display: none !important; }
+            body { background: white !important; }
+            .glass-panel { 
+                background: white !important; 
+                backdrop-filter: none !important; 
+                -webkit-backdrop-filter: none !important;
+                border: 1px solid #e2e8f0 !important; 
+                box-shadow: none !important;
+                color: black !important;
+            }
+            .print-area, .print-area * { visibility: visible; color: black !important; }
+            #printWrapper { position: absolute; left: 0; top: 0; width: 100%; }
+            #harian, #dashboard, #pencarian, nav { display: none !important; }
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 h-screen flex flex-col md:flex-row overflow-hidden">
+<body class="h-screen flex flex-col text-slate-800">
 
-    <!-- Sidebar Desktop (Sembunyi di Mobile) -->
-    <aside id="sidebar" class="bg-brand-800 text-white w-64 flex-shrink-0 hidden md:flex flex-col h-full transition-all duration-300 z-50 shadow-xl">
-        <div class="p-6 flex items-center justify-between border-b border-brand-700">
-            <h1 class="text-xl font-bold tracking-wide"><i class="fas fa-book-open mr-2 text-brand-200"></i> JurnalHarian</h1>
-        </div>
-        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-            <a href="#" onclick="switchTab('dashboard')" class="nav-btn block px-4 py-3 rounded-xl hover:bg-brand-700 transition" data-target="dashboard"><i class="fas fa-home w-6 text-brand-200"></i> Dashboard</a>
-            <a href="#" onclick="switchTab('harian')" class="nav-btn block px-4 py-3 rounded-xl hover:bg-brand-700 transition" data-target="harian"><i class="fas fa-calendar-day w-6 text-brand-200"></i> Harian</a>
-            <a href="#" onclick="switchTab('mingguan')" class="nav-btn block px-4 py-3 rounded-xl hover:bg-brand-700 transition" data-target="mingguan"><i class="fas fa-calendar-week w-6 text-brand-200"></i> Mingguan</a>
-            <a href="#" onclick="switchTab('bulanan')" class="nav-btn block px-4 py-3 rounded-xl hover:bg-brand-700 transition" data-target="bulanan"><i class="fas fa-table w-6 text-brand-200"></i> Rekap Bulanan</a>
-            <a href="#" onclick="switchTab('pencarian')" class="nav-btn block px-4 py-3 rounded-xl hover:bg-brand-700 transition" data-target="pencarian"><i class="fas fa-search w-6 text-brand-200"></i> Pencarian</a>
-        </nav>
-        <div class="p-4 text-xs text-center text-brand-200 opacity-70">
-            &copy; 2026 Fasilitator
-        </div>
-    </aside>
-
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col h-full overflow-hidden relative">
-        
-        <!-- Header Utama (Mobile & Desktop) -->
-        <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-4 flex items-center justify-between no-print z-30 sticky top-0">
-            <div class="flex items-center gap-3">
-                <div class="md:hidden bg-brand-100 text-brand-600 p-2 rounded-lg">
-                    <i class="fas fa-book-open"></i>
-                </div>
-                <h2 id="pageTitle" class="text-xl font-bold text-gray-800 tracking-tight">Dashboard</h2>
-            </div>
-            
-            <!-- Action Buttons Export (Hanya muncul di tab tertentu) -->
-            <div id="actionButtons" class="hidden">
-                <button onclick="window.print()" class="bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-700 px-3 md:px-4 py-2 rounded-lg text-sm font-semibold mr-2 transition">
-                    <i class="fas fa-print md:mr-1"></i> <span class="hidden md:inline">Cetak</span>
-                </button>
-                <button onclick="exportPDF()" class="bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white px-3 md:px-4 py-2 rounded-lg text-sm font-semibold transition shadow-sm">
-                    <i class="fas fa-file-pdf md:mr-1"></i> <span class="hidden md:inline">PDF</span>
-                </button>
-            </div>
-        </header>
-
-        <!-- Area Konten yang Bisa di Scroll (Padding bawah ditambah untuk ruang Bottom Nav di HP) -->
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6 pb-24 md:pb-6 print-area scroll-smooth">
-            
-            <!-- Dashboard -->
-            <div id="dashboard" class="tab-content active max-w-5xl mx-auto">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center">
-                        <div class="w-14 h-14 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-2xl mr-4"><i class="fas fa-calendar-check"></i></div>
-                        <div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Materi Bulan Ini</p><p id="dashTotalBulan" class="text-3xl font-bold text-gray-800">0</p></div>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center">
-                        <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center text-2xl mr-4"><i class="fas fa-book"></i></div>
-                        <div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Tersimpan</p><p id="dashTotalSemua" class="text-3xl font-bold text-gray-800">0</p></div>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center">
-                        <div class="w-14 h-14 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center text-2xl mr-4"><i class="fas fa-clock"></i></div>
-                        <div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Hari Ini</p><p id="dashToday" class="text-lg font-bold text-gray-800 leading-tight">-</p></div>
-                    </div>
-                </div>
-                
-                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold mb-4 text-gray-800">Jadwal Cepat Hari Ini</h3>
-                    <div id="dashJadwalHariIni" class="space-y-3">
-                        <!-- Filled by JS -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Harian -->
-            <div id="harian" class="tab-content max-w-4xl mx-auto">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6 no-print">
-                    <label class="block text-sm font-semibold text-gray-700 mb-3">Pilih Tanggal:</label>
-                    <input type="date" id="inputDateHarian" class="w-full md:w-1/2 p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium text-gray-700 appearance-none">
-                </div>
-                
-                <div class="flex items-center gap-3 mb-5 hidden" id="harianTitleContainer">
-                    <div class="w-10 h-10 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-lg"><i class="fas fa-calendar-day"></i></div>
-                    <h3 id="harianTitle" class="text-lg md:text-xl font-bold text-gray-800"></h3>
-                </div>
-
-                <div id="harianContainer" class="space-y-5">
-                    <!-- Cards will be generated here -->
-                </div>
-            </div>
-
-            <!-- Mingguan -->
-            <div id="mingguan" class="tab-content max-w-5xl mx-auto">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6 no-print">
-                    <label class="block text-sm font-semibold text-gray-700 mb-3">Pilih Tanggal (Lihat 1 Minggu):</label>
-                    <input type="date" id="inputDateMingguan" class="w-full md:w-1/2 p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium text-gray-700 appearance-none">
-                </div>
-
-                <div id="mingguanPrintArea" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-8">
-                    <h3 id="mingguanTitle" class="text-xl md:text-2xl font-bold text-center mb-6 text-gray-800">Jadwal Mingguan</h3>
-                    <div id="mingguanContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-                        <!-- Generated by JS -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bulanan -->
-            <div id="bulanan" class="tab-content max-w-6xl mx-auto">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6 no-print">
-                    <label class="block text-sm font-semibold text-gray-700 mb-3">Pilih Bulan & Tahun:</label>
-                    <input type="month" id="inputMonthBulanan" class="w-full md:w-1/2 p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium text-gray-700 appearance-none">
-                </div>
-
-                <div id="bulananPrintArea" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-8">
-                    <h3 id="bulananTitle" class="text-xl md:text-2xl font-bold text-center mb-6 text-gray-800">Rekap Bulanan</h3>
-                    <div class="overflow-x-auto rounded-xl border border-gray-200">
-                        <table class="w-full text-left border-collapse whitespace-nowrap">
-                            <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200">
-                                    <th class="p-4 text-sm font-bold text-gray-700">Tanggal</th>
-                                    <th class="p-4 text-sm font-bold text-gray-700">Waktu</th>
-                                    <th class="p-4 text-sm font-bold text-gray-700">Kelas</th>
-                                    <th class="p-4 text-sm font-bold text-gray-700">Kegiatan</th>
-                                    <th class="p-4 text-sm font-bold text-gray-700">Materi Pelajaran</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bulananTableBody" class="divide-y divide-gray-200 bg-white">
-                                <!-- Generated by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pencarian -->
-            <div id="pencarian" class="tab-content max-w-4xl mx-auto">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
-                    <label class="block text-sm font-semibold text-gray-700 mb-3">Cari Materi Pelajaran:</label>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <div class="relative flex-1">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <i class="fas fa-search text-gray-400"></i>
-                            </div>
-                            <input type="text" id="inputSearch" placeholder="Contoh: Wudhu, Hijaiyah..." class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium text-gray-700 outline-none">
-                        </div>
-                        <button onclick="performSearch()" class="w-full sm:w-auto bg-brand-600 active:bg-brand-700 text-white px-8 py-3.5 rounded-xl font-bold hover:bg-brand-700 transition shadow-sm">Cari</button>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6">
-                    <h3 class="text-lg font-bold mb-4 text-gray-800">Hasil Pencarian</h3>
-                    <div id="searchResult" class="space-y-4">
-                        <div class="text-gray-400 text-center py-8 font-medium">Ketik kata kunci dan klik Cari.</div>
-                    </div>
-                </div>
-            </div>
-
-        </main>
+    <!-- Latar Belakang Mesh Gradient (Glass Core) -->
+    <div class="bg-mesh">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
     </div>
 
-    <!-- Mobile Bottom Navigation (Hanya muncul di layar HP) -->
-    <nav class="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center h-16 z-40 pb-safe shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-        <button onclick="switchTab('dashboard')" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-brand-600 transition" data-target="dashboard">
-            <i class="fas fa-home text-xl mb-0.5"></i>
-            <span class="text-[10px] font-semibold">Home</span>
-        </button>
-        <button onclick="switchTab('harian')" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-brand-600 transition" data-target="harian">
-            <i class="fas fa-calendar-day text-xl mb-0.5"></i>
-            <span class="text-[10px] font-semibold">Harian</span>
-        </button>
-        <button onclick="switchTab('mingguan')" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-brand-600 transition" data-target="mingguan">
-            <i class="fas fa-calendar-week text-xl mb-0.5"></i>
-            <span class="text-[10px] font-semibold">Mingguan</span>
-        </button>
-        <button onclick="switchTab('bulanan')" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-brand-600 transition" data-target="bulanan">
-            <i class="fas fa-table text-xl mb-0.5"></i>
-            <span class="text-[10px] font-semibold">Bulanan</span>
-        </button>
-        <button onclick="switchTab('pencarian')" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-brand-600 transition" data-target="pencarian">
-            <i class="fas fa-search text-xl mb-0.5"></i>
-            <span class="text-[10px] font-semibold">Cari</span>
-        </button>
+    <!-- Header Atas (Glass) -->
+    <header class="glass-panel mx-4 mt-4 rounded-2xl px-5 py-4 flex justify-between items-center z-20 no-print flex-shrink-0">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 flex items-center justify-center text-white shadow-lg">
+                <i class="fas fa-book-open text-sm"></i>
+            </div>
+            <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-700 to-indigo-700 tracking-tight">JurnalHarian</h1>
+        </div>
+        
+        <!-- Action Buttons (Export PDF) - Hanya muncul di Mingguan/Bulanan -->
+        <div id="actionButtons" class="hidden gap-2">
+            <button onclick="exportPDF()" class="glass-button px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+                <i class="fas fa-file-export"></i> <span>Ekspor PDF</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Area Konten Utama -->
+    <main class="flex-1 overflow-y-auto px-4 pt-6 pb-32 relative z-10 scroll-smooth print-area">
+        
+        <!-- ================= DASHBOARD ================= -->
+        <div id="tab-dashboard" class="tab-content active max-w-4xl mx-auto">
+            <div class="mb-6 flex justify-between items-end">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Dashboard</h2>
+                    <p class="text-slate-500 text-sm font-medium" id="dashToday">Senin, 1 Jan</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="glass-panel p-6 rounded-3xl flex items-center gap-5 relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-300 rounded-full blur-2xl opacity-50"></div>
+                    <div class="w-14 h-14 rounded-2xl bg-white/60 flex items-center justify-center text-blue-600 text-2xl shadow-sm backdrop-blur-md border border-white">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-500 mb-1">Materi Bulan Ini</p>
+                        <h3 class="text-3xl font-bold text-slate-800" id="dashTotalBulan">0</h3>
+                    </div>
+                </div>
+                
+                <div class="glass-panel p-6 rounded-3xl flex items-center gap-5 relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-300 rounded-full blur-2xl opacity-50"></div>
+                    <div class="w-14 h-14 rounded-2xl bg-white/60 flex items-center justify-center text-purple-600 text-2xl shadow-sm backdrop-blur-md border border-white">
+                        <i class="fas fa-archive"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-500 mb-1">Total Disimpan</p>
+                        <h3 class="text-3xl font-bold text-slate-800" id="dashTotalSemua">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold text-slate-800 mb-4 px-2">Jadwal Cepat Hari Ini</h3>
+            <div class="glass-panel p-2 rounded-3xl" id="dashJadwalHariIni">
+                <!-- Diisi via JS -->
+            </div>
+        </div>
+
+        <!-- ================= HARIAN ================= -->
+        <div id="tab-harian" class="tab-content max-w-2xl mx-auto">
+            <!-- Glass Date Picker -->
+            <div class="glass-panel p-4 rounded-3xl mb-6 flex items-center justify-between no-print relative">
+                <div class="flex flex-col">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 px-1">Pilih Tanggal</label>
+                    <div class="font-bold text-lg text-slate-800 px-1" id="displayHarianTitle">Hari Ini</div>
+                </div>
+                <input type="date" id="inputDateHarian" class="glass-input rounded-xl p-2.5 text-sm font-semibold w-40 cursor-pointer">
+            </div>
+
+            <div id="harianList" class="space-y-4">
+                <!-- Card Glass Harian diisi JS -->
+            </div>
+        </div>
+
+        <!-- ================= MINGGUAN ================= -->
+        <div id="tab-mingguan" class="tab-content max-w-4xl mx-auto">
+            <div class="glass-panel p-4 rounded-3xl mb-6 flex items-center justify-between no-print">
+                <div class="flex flex-col">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 px-1">Pilih Tanggal</label>
+                    <div class="font-bold text-lg text-slate-800 px-1">Lihat Minggu Ini</div>
+                </div>
+                <input type="date" id="inputDateMingguan" class="glass-input rounded-xl p-2.5 text-sm font-semibold w-40 cursor-pointer">
+            </div>
+
+            <!-- Area Khusus Export -->
+            <div id="mingguanPrintArea" class="glass-panel rounded-3xl p-6">
+                <div class="text-center mb-8 border-b border-slate-300/30 pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">Jadwal Mingguan</h2>
+                    <p class="text-slate-500 font-medium mt-1" id="mingguanTitle">Senin - Sabtu</p>
+                </div>
+                
+                <div id="mingguanList" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Diisi JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= BULANAN ================= -->
+        <div id="tab-bulanan" class="tab-content max-w-5xl mx-auto">
+            <div class="glass-panel p-4 rounded-3xl mb-6 flex items-center justify-between no-print">
+                <div class="flex flex-col">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 px-1">Pilih Bulan</label>
+                    <div class="font-bold text-lg text-slate-800 px-1">Rekap Bulanan</div>
+                </div>
+                <input type="month" id="inputMonthBulanan" class="glass-input rounded-xl p-2.5 text-sm font-semibold w-44 cursor-pointer">
+            </div>
+
+            <div id="bulananPrintArea" class="glass-panel rounded-3xl p-6">
+                <div class="text-center mb-6 border-b border-slate-300/30 pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">Rekapitulasi Jurnal</h2>
+                    <p class="text-slate-500 font-medium mt-1" id="bulananTitle">Januari</p>
+                </div>
+
+                <div class="overflow-x-auto rounded-2xl border border-white/40">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-white/40">
+                                <th class="p-4 text-sm font-bold text-slate-700">Tanggal</th>
+                                <th class="p-4 text-sm font-bold text-slate-700">Waktu</th>
+                                <th class="p-4 text-sm font-bold text-slate-700">Kelas</th>
+                                <th class="p-4 text-sm font-bold text-slate-700">Kegiatan</th>
+                                <th class="p-4 text-sm font-bold text-slate-700">Materi Pelajaran</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bulananTableBody" class="divide-y divide-white/40">
+                            <!-- Diisi JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PENCARIAN ================= -->
+        <div id="tab-pencarian" class="tab-content max-w-3xl mx-auto">
+            <div class="glass-panel p-2 pl-4 rounded-full mb-6 flex items-center gap-3">
+                <i class="fas fa-search text-slate-400"></i>
+                <input type="text" id="inputSearch" placeholder="Cari materi tersimpan (cth: Wudhu, Sholat...)" class="flex-1 bg-transparent border-none outline-none py-3 text-slate-700 font-medium placeholder-slate-400">
+            </div>
+            
+            <div class="glass-panel rounded-3xl p-6">
+                <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-200/50 pb-2">Hasil Pencarian</h3>
+                <div id="searchResult" class="space-y-3">
+                    <div class="text-slate-400 text-center py-6 font-medium italic">Ketik untuk mencari materi.</div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FLOATING BOTTOM NAVIGATION (Glass Style) -->
+    <nav class="fixed bottom-6 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-[500px] z-40 no-print">
+        <div class="glass-panel rounded-3xl px-2 py-2 flex justify-between items-center shadow-2xl">
+            <button onclick="switchTab('dashboard')" class="nav-btn relative flex flex-col items-center justify-center flex-1 py-2 rounded-2xl transition-all duration-300 group" data-target="dashboard">
+                <div class="nav-indicator absolute inset-0 bg-white/40 rounded-2xl opacity-0 scale-90 transition-all duration-300"></div>
+                <i class="fas fa-home text-xl mb-1 text-slate-400 group-hover:text-purple-600 transition-colors z-10 icon"></i>
+                <span class="text-[10px] font-bold text-slate-400 z-10 text-label">Home</span>
+            </button>
+            <button onclick="switchTab('harian')" class="nav-btn relative flex flex-col items-center justify-center flex-1 py-2 rounded-2xl transition-all duration-300 group" data-target="harian">
+                <div class="nav-indicator absolute inset-0 bg-white/40 rounded-2xl opacity-0 scale-90 transition-all duration-300"></div>
+                <i class="fas fa-calendar-day text-xl mb-1 text-slate-400 group-hover:text-purple-600 transition-colors z-10 icon"></i>
+                <span class="text-[10px] font-bold text-slate-400 z-10 text-label">Harian</span>
+            </button>
+            <button onclick="switchTab('mingguan')" class="nav-btn relative flex flex-col items-center justify-center flex-1 py-2 rounded-2xl transition-all duration-300 group" data-target="mingguan">
+                <div class="nav-indicator absolute inset-0 bg-white/40 rounded-2xl opacity-0 scale-90 transition-all duration-300"></div>
+                <i class="fas fa-layer-group text-xl mb-1 text-slate-400 group-hover:text-purple-600 transition-colors z-10 icon"></i>
+                <span class="text-[10px] font-bold text-slate-400 z-10 text-label">Mingguan</span>
+            </button>
+            <button onclick="switchTab('bulanan')" class="nav-btn relative flex flex-col items-center justify-center flex-1 py-2 rounded-2xl transition-all duration-300 group" data-target="bulanan">
+                <div class="nav-indicator absolute inset-0 bg-white/40 rounded-2xl opacity-0 scale-90 transition-all duration-300"></div>
+                <i class="fas fa-table text-xl mb-1 text-slate-400 group-hover:text-purple-600 transition-colors z-10 icon"></i>
+                <span class="text-[10px] font-bold text-slate-400 z-10 text-label">Bulanan</span>
+            </button>
+            <button onclick="switchTab('pencarian')" class="nav-btn relative flex flex-col items-center justify-center flex-1 py-2 rounded-2xl transition-all duration-300 group" data-target="pencarian">
+                <div class="nav-indicator absolute inset-0 bg-white/40 rounded-2xl opacity-0 scale-90 transition-all duration-300"></div>
+                <i class="fas fa-search text-xl mb-1 text-slate-400 group-hover:text-purple-600 transition-colors z-10 icon"></i>
+                <span class="text-[10px] font-bold text-slate-400 z-10 text-label">Cari</span>
+            </button>
+        </div>
     </nav>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-20 md:bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-5 py-3 rounded-xl shadow-2xl translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center font-medium min-w-[250px] justify-center">
-        <i class="fas fa-check-circle text-brand-400 mr-2 text-lg"></i>
+    <!-- FLOATING TOAST -->
+    <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 glass-panel text-slate-800 font-bold px-6 py-3 rounded-full shadow-lg -translate-y-20 opacity-0 transition-all duration-500 z-50 flex items-center border border-white">
+        <div class="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center text-white mr-3 text-xs shadow-inner">
+            <i class="fas fa-check"></i>
+        </div>
         <span id="toastMsg">Berhasil disimpan!</span>
     </div>
 
-    <!-- Javascript Logic -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
         // Database from LocalStorage
         let db = JSON.parse(localStorage.getItem('jurnalFasilitator')) || {};
@@ -284,11 +363,16 @@
             const d = String(dateObj.getDate()).padStart(2, '0');
             return `${y}-${m}-${d}`;
         }
-
         function formatIndo(dateStr) {
             if(!dateStr) return '';
             const d = new Date(dateStr);
-            return `${HARI[d.getDay()]}, ${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
+            return `${HARI[d.getDay()]}, ${d.getDate()} ${BULAN[d.getMonth()]}`;
+        }
+        function getStartOfWeek(dateStr) {
+            const d = new Date(dateStr);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(d.setDate(diff));
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -301,89 +385,100 @@
             document.getElementById('inputDateHarian').addEventListener('change', renderHarian);
             document.getElementById('inputDateMingguan').addEventListener('change', renderMingguan);
             document.getElementById('inputMonthBulanan').addEventListener('change', renderBulanan);
-            document.getElementById('inputSearch').addEventListener('keypress', (e) => { if(e.key === 'Enter') performSearch(); });
+            document.getElementById('inputSearch').addEventListener('input', performSearch);
 
-            switchTab('harian'); // Default open Harian tab
+            switchTab('harian'); 
         });
 
+        // --- NAVIGATION & UI ---
         function switchTab(tabId) {
-            // Sembunyikan semua konten tab
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            // Tampilkan target
-            document.getElementById(tabId).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
             
-            // Perbarui Judul Header
-            const titles = {
-                'dashboard': 'Dashboard',
-                'harian': 'Jurnal Harian',
-                'mingguan': 'Jurnal Mingguan',
-                'bulanan': 'Rekap Bulanan',
-                'pencarian': 'Pencarian Materi'
-            };
-            document.getElementById('pageTitle').innerText = titles[tabId];
-            
-            // Tombol Cetak / PDF
             const actionBtns = document.getElementById('actionButtons');
             if(tabId === 'mingguan' || tabId === 'bulanan') {
-                actionBtns.classList.remove('hidden');
-                actionBtns.classList.add('flex');
+                actionBtns.classList.remove('hidden'); actionBtns.classList.add('flex');
             } else {
-                actionBtns.classList.add('hidden');
-                actionBtns.classList.remove('flex');
+                actionBtns.classList.add('hidden'); actionBtns.classList.remove('flex');
             }
 
-            // Update styling di Sidebar Desktop & Bottom Nav Mobile
+            // Update Glass Navigation Styling
             document.querySelectorAll('.nav-btn').forEach(btn => {
+                const indicator = btn.querySelector('.nav-indicator');
+                const icon = btn.querySelector('.icon');
+                const label = btn.querySelector('.text-label');
+
                 if (btn.dataset.target === tabId) {
-                    btn.classList.add('bg-brand-900', 'text-white', 'font-semibold');
-                    btn.classList.remove('hover:bg-brand-700', 'text-brand-100');
+                    indicator.classList.remove('opacity-0', 'scale-90');
+                    indicator.classList.add('opacity-100', 'scale-100');
+                    icon.classList.remove('text-slate-400');
+                    icon.classList.add('text-purple-600');
+                    label.classList.remove('text-slate-400');
+                    label.classList.add('text-purple-700');
                 } else {
-                    btn.classList.remove('bg-brand-900', 'text-white', 'font-semibold');
-                    btn.classList.add('hover:bg-brand-700', 'text-brand-100');
+                    indicator.classList.add('opacity-0', 'scale-90');
+                    indicator.classList.remove('opacity-100', 'scale-100');
+                    icon.classList.add('text-slate-400');
+                    icon.classList.remove('text-purple-600');
+                    label.classList.add('text-slate-400');
+                    label.classList.remove('text-purple-700');
                 }
             });
 
-            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
-                if (btn.dataset.target === tabId) {
-                    btn.classList.add('text-brand-600');
-                    btn.classList.remove('text-gray-400');
-                } else {
-                    btn.classList.remove('text-brand-600');
-                    btn.classList.add('text-gray-400');
-                }
-            });
-            
-            // Render ulang data
             if(tabId === 'dashboard') renderDashboard();
             if(tabId === 'harian') renderHarian();
             if(tabId === 'mingguan') renderMingguan();
             if(tabId === 'bulanan') renderBulanan();
             
-            window.scrollTo(0, 0); // Scroll ke atas saat pindah tab
+            // smooth scroll to top
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = msg;
-            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.remove('-translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
             setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+                toast.classList.add('-translate-y-20', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 2500);
         }
-        
-        function saveData(date, time, value) {
+
+        // --- CORE DATA LOGIC ---
+        function saveData(date, time) {
+            const inputEl = document.getElementById(`input_${time}`);
+            const val = inputEl.value.trim();
+            if (!val) { alert("Materi tidak boleh kosong."); inputEl.focus(); return; }
+
             if (!db[date]) db[date] = {};
-            db[date][time] = value;
+            db[date][time] = val;
             localStorage.setItem('jurnalFasilitator', JSON.stringify(db));
-            showToast('Materi berhasil disimpan!');
+            showToast('Materi Disimpan');
+            renderHarian();
         }
 
         function deleteData(date, time) {
-            if (db[date] && db[date][time]) {
+            if (confirm("Hapus materi ini?")) {
                 delete db[date][time];
                 if (Object.keys(db[date]).length === 0) delete db[date];
                 localStorage.setItem('jurnalFasilitator', JSON.stringify(db));
-                showToast('Materi dihapus!');
+                showToast('Materi Dihapus');
+                renderHarian();
+            }
+        }
+
+        function editData(date, time, oldVal) {
+            const newVal = prompt("Edit Materi Pelajaran:", oldVal);
+            if (newVal !== null) {
+                if(newVal.trim() === '') {
+                    alert("Gunakan tombol hapus jika ingin mengosongkan.");
+                } else {
+                    if (!db[date]) db[date] = {};
+                    db[date][time] = newVal.trim();
+                    localStorage.setItem('jurnalFasilitator', JSON.stringify(db));
+                    renderHarian();
+                }
             }
         }
 
@@ -391,16 +486,13 @@
         function renderDashboard() {
             document.getElementById('dashToday').innerText = formatIndo(formatYMD(new Date()));
             
-            let countAll = 0;
-            let countMonth = 0;
+            let countAll = 0; let countMonth = 0;
             const currentYM = formatYMD(new Date()).substring(0, 7);
 
             for (const [dateStr, times] of Object.entries(db)) {
                 const count = Object.keys(times).length;
                 countAll += count;
-                if (dateStr.startsWith(currentYM)) {
-                    countMonth += count;
-                }
+                if (dateStr.startsWith(currentYM)) countMonth += count;
             }
             
             document.getElementById('dashTotalSemua').innerText = countAll;
@@ -412,212 +504,151 @@
             dashJadwal.innerHTML = '';
             
             if (!schedules || schedules.length === 0) {
-                dashJadwal.innerHTML = '<div class="text-center py-6 bg-gray-50 rounded-xl border border-gray-100 text-gray-500 font-medium">✨ Tidak ada jadwal hari ini ✨</div>';
+                dashJadwal.innerHTML = '<div class="text-center py-6 text-slate-500 font-medium">✨ Bebas Tugas! Tidak ada jadwal hari ini. ✨</div>';
             } else {
                 schedules.forEach(s => {
-                    const savedMaterial = (db[formatYMD(today)] && db[formatYMD(today)][s.time]) ? db[formatYMD(today)][s.time] : null;
-                    const statusText = s.type === 'fixed' 
-                        ? '<span class="text-[10px] sm:text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded font-semibold">RUTIN</span>' 
-                        : (savedMaterial ? '<span class="text-[10px] sm:text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded font-semibold"><i class="fas fa-check mr-1"></i> DIISI</span>' : '<span class="text-[10px] sm:text-xs bg-red-50 text-red-600 border border-red-100 px-2 py-1 rounded font-semibold">KOSONG</span>');
+                    const isFilled = (db[formatYMD(today)] && db[formatYMD(today)][s.time]);
+                    const badge = s.type === 'fixed' 
+                        ? `<span class="bg-white/50 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm">Rutin</span>`
+                        : (isFilled ? `<span class="bg-green-100 text-green-700 border border-green-200 px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm"><i class="fas fa-check"></i> Diisi</span>` 
+                                    : `<span class="bg-rose-100 text-rose-600 border border-rose-200 px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm">Kosong</span>`);
                     
                     dashJadwal.innerHTML += `
-                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="flex justify-between items-center p-4 border-b border-white/40 last:border-0 hover:bg-white/20 transition-colors rounded-2xl">
                             <div>
-                                <p class="font-bold text-gray-800 text-sm md:text-base">${s.title}</p>
-                                <p class="text-xs text-gray-500 mt-1"><i class="far fa-clock mr-1"></i> ${s.time} • ${s.kelas}</p>
+                                <p class="font-bold text-slate-800">${s.title}</p>
+                                <p class="text-xs text-slate-500 font-medium mt-1"><i class="far fa-clock"></i> ${s.time} • ${s.kelas}</p>
                             </div>
-                            <div class="ml-2">${statusText}</div>
+                            <div>${badge}</div>
                         </div>
                     `;
                 });
             }
         }
 
-        // --- HARIAN (Sesuai Screenshot UI/UX) ---
+        // --- HARIAN (GLASS CARDS) ---
         function renderHarian() {
             const dateStr = document.getElementById('inputDateHarian').value;
-            if (!dateStr) return;
+            const isToday = dateStr === formatYMD(new Date());
+            document.getElementById('displayHarianTitle').innerText = isToday ? 'Hari Ini' : formatIndo(dateStr);
 
-            const dateObj = new Date(dateStr);
-            const dayIdx = dateObj.getDay();
-            const container = document.getElementById('harianContainer');
-            
-            document.getElementById('harianTitleContainer').classList.remove('hidden');
-            document.getElementById('harianTitle').innerText = `Jadwal: ${formatIndo(dateStr)}`;
-            
-            const schedules = SCHEDULE[dayIdx];
+            const dayIdx = new Date(dateStr).getDay();
+            const container = document.getElementById('harianList');
             container.innerHTML = '';
+            const schedules = SCHEDULE[dayIdx];
 
             if (!schedules || schedules.length === 0) {
                 container.innerHTML = `
-                    <div class="bg-blue-50 border-l-4 border-blue-400 p-5 rounded-r-xl">
-                        <div class="flex items-center">
-                            <i class="fas fa-info-circle text-blue-500 text-xl"></i>
-                            <p class="ml-3 font-medium text-blue-800">Alhamdulillah, tidak ada jadwal untuk hari ini.</p>
-                        </div>
+                    <div class="glass-panel p-6 rounded-3xl text-center border-l-4 border-blue-400">
+                        <i class="fas fa-smile text-4xl text-blue-400 mb-3 opacity-80"></i>
+                        <p class="font-semibold text-slate-700">Kosong! Tidak ada jadwal di tanggal ini.</p>
                     </div>`;
                 return;
             }
 
             schedules.forEach(s => {
                 const card = document.createElement('div');
-                card.className = "bg-white p-5 md:p-6 rounded-2xl shadow-[0_2px_12px_-3px_rgba(6,81,237,0.05)] border border-gray-100";
+                card.className = "glass-panel p-5 rounded-3xl overflow-hidden relative";
                 
-                // Header (Sesuai UI: Badge jam abu & kelas hijau)
-                let headerHtml = `
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="bg-gray-50 border border-gray-200 text-gray-600 text-xs font-semibold px-2.5 py-1 rounded flex items-center gap-1"><i class="far fa-clock"></i> ${s.time}</span>
-                        <span class="bg-brand-50 text-brand-700 text-xs font-bold px-2.5 py-1 rounded">${s.kelas}</span>
+                // Dekorasi bulatan blur di dalam card
+                let decor = `<div class="absolute -right-10 -top-10 w-32 h-32 ${s.type==='fixed'?'bg-slate-300':'bg-purple-300'} rounded-full blur-2xl opacity-40 pointer-events-none"></div>`;
+
+                let header = `
+                    <div class="flex justify-between items-start relative z-10">
+                        <div>
+                            <div class="flex gap-2 mb-2">
+                                <span class="bg-white/60 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-lg shadow-sm backdrop-blur-md border border-white/50">${s.time}</span>
+                                <span class="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 text-[11px] font-bold px-2 py-1 rounded-lg shadow-sm border border-white/50">${s.kelas}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 leading-tight">${s.title}</h3>
+                        </div>
                     </div>
-                    <h4 class="text-lg md:text-xl font-bold text-gray-900 leading-tight">${s.title}</h4>
                 `;
 
-                let actionHtml = '';
+                let content = '';
                 if (s.type === 'fixed') {
-                    actionHtml = `
-                        <div class="mt-4 pt-3 border-t border-gray-50 text-gray-400 italic text-sm md:text-right">
-                            *Kegiatan rutinan (Tidak perlu diisi)
-                        </div>`;
+                    content = `<div class="mt-4 pt-3 border-t border-white/30 text-slate-500 font-medium text-sm italic relative z-10"><i class="fas fa-info-circle mr-1"></i> Kegiatan rutin, tidak perlu mengisi materi.</div>`;
                 } else {
-                    const savedValue = (db[dateStr] && db[dateStr][s.time]) ? db[dateStr][s.time] : '';
-                    if (savedValue) {
-                        // Kondisi jika SUDAH diisi
-                        actionHtml = `
-                            <div class="mt-5 bg-brand-50/50 p-4 rounded-xl border border-brand-100">
-                                <div class="text-gray-800 text-sm md:text-base break-words mb-4">
-                                    <span class="text-brand-700 font-bold block mb-1 text-xs uppercase tracking-wider">Materi Tersimpan:</span>
-                                    <div class="font-medium">${savedValue}</div>
+                    const saved = (db[dateStr] && db[dateStr][s.time]) ? db[dateStr][s.time] : '';
+                    if (saved) {
+                        content = `
+                            <div class="mt-4 pt-4 border-t border-white/30 relative z-10">
+                                <div class="bg-white/50 border border-white/60 p-3 rounded-2xl mb-3 shadow-inner">
+                                    <span class="text-[10px] font-bold text-purple-600 uppercase tracking-wider block mb-1">Materi Disimpan</span>
+                                    <p class="font-semibold text-slate-800">${saved}</p>
                                 </div>
-                                <div class="flex flex-col sm:flex-row gap-2 w-full pt-3 border-t border-brand-200/50">
-                                    <button onclick="editMateri('${dateStr}', '${s.time}', '${savedValue.replace(/'/g, "\\'")}')" class="flex-1 bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 active:bg-blue-100 px-4 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center"><i class="fas fa-edit mr-2"></i> Edit Materi</button>
-                                    <button onclick="hapusMateri('${dateStr}', '${s.time}')" class="w-full sm:w-auto bg-white text-red-600 border border-red-200 hover:bg-red-50 active:bg-red-100 px-4 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center"><i class="fas fa-trash-alt mr-2"></i> Hapus</button>
+                                <div class="flex gap-2">
+                                    <button onclick="editData('${dateStr}', '${s.time}', '${saved.replace(/'/g, "\\'")}')" class="flex-1 bg-white/70 hover:bg-white text-blue-600 font-bold py-2.5 rounded-xl text-sm transition-all border border-white/50 shadow-sm"><i class="fas fa-edit mr-1"></i> Edit</button>
+                                    <button onclick="deleteData('${dateStr}', '${s.time}')" class="bg-white/70 hover:bg-white text-rose-500 font-bold px-4 py-2.5 rounded-xl text-sm transition-all border border-white/50 shadow-sm"><i class="fas fa-trash-alt"></i></button>
                                 </div>
                             </div>
                         `;
                     } else {
-                        // Kondisi input BELUM diisi (menggunakan flex-col di mobile agar tidak terpotong)
-                        actionHtml = `
-                            <div class="mt-5 flex flex-col sm:flex-row gap-3">
-                                <input type="text" id="input_${s.time}" placeholder="Ketik Materi Pelajaran..." class="flex-1 min-w-0 w-full p-4 bg-gray-50 border border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm font-medium transition-all shadow-inner outline-none" autocomplete="off">
-                                <button onclick="simpanMateri('${dateStr}', '${s.time}')" class="w-full sm:w-auto shrink-0 bg-brand-600 active:bg-brand-700 hover:bg-brand-700 text-white px-6 py-4 rounded-xl font-bold transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-sm">
-                                    <i class="fas fa-save"></i> Simpan
-                                </button>
+                        content = `
+                            <div class="mt-5 relative z-10 flex flex-col sm:flex-row gap-3">
+                                <input type="text" id="input_${s.time}" placeholder="Ketik materi (cth: Wudhu)..." class="glass-input flex-1 rounded-xl px-4 py-3 text-sm font-medium w-full" autocomplete="off">
+                                <button onclick="saveData('${dateStr}', '${s.time}')" class="glass-button px-6 py-3 rounded-xl font-bold text-sm w-full sm:w-auto shadow-lg"><i class="fas fa-save mr-1"></i> Simpan</button>
                             </div>
                         `;
                     }
                 }
-                
-                card.innerHTML = headerHtml + actionHtml;
+                card.innerHTML = decor + header + content;
                 container.appendChild(card);
             });
         }
 
-        function simpanMateri(date, time) {
-            const inputEl = document.getElementById(`input_${time}`);
-            const val = inputEl.value.trim();
-            if (!val) {
-                alert("Mohon isi materi pelajaran terlebih dahulu.");
-                inputEl.focus();
-                return;
-            }
-            saveData(date, time, val);
-            renderHarian();
-        }
-
-        function editMateri(date, time, oldVal) {
-            const newVal = prompt("Edit Materi Pelajaran:", oldVal);
-            if (newVal !== null) {
-                if(newVal.trim() === '') {
-                    alert("Materi tidak boleh kosong. Gunakan tombol 'Hapus' jika ingin mengosongkan.");
-                } else {
-                    saveData(date, time, newVal.trim());
-                    renderHarian();
-                }
-            }
-        }
-
-        function hapusMateri(date, time) {
-            if (confirm("Yakin ingin menghapus materi ini?")) {
-                deleteData(date, time);
-                renderHarian();
-            }
-        }
-
         // --- MINGGUAN ---
-        function getStartOfWeek(dateStr) {
-            const d = new Date(dateStr);
-            const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-            return new Date(d.setDate(diff));
-        }
-
         function renderMingguan() {
             const dateStr = document.getElementById('inputDateMingguan').value;
-            if (!dateStr) return;
-
             const startOfWeek = getStartOfWeek(dateStr);
-            const container = document.getElementById('mingguanContainer');
-            container.innerHTML = '';
+            const end = new Date(startOfWeek); end.setDate(startOfWeek.getDate() + 5);
             
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 5);
-            
-            document.getElementById('mingguanTitle').innerText = `Jadwal: ${formatIndo(formatYMD(startOfWeek))} s.d ${formatIndo(formatYMD(endOfWeek))}`;
+            document.getElementById('mingguanTitle').innerText = `${formatIndo(formatYMD(startOfWeek))} s.d ${formatIndo(formatYMD(end))}`;
+            const list = document.getElementById('mingguanList');
+            list.innerHTML = '';
 
             for (let i = 1; i <= 6; i++) {
-                const curDate = new Date(startOfWeek);
-                curDate.setDate(startOfWeek.getDate() + (i - 1));
+                const curDate = new Date(startOfWeek); curDate.setDate(curDate.getDate() + (i - 1));
                 const curDateStr = formatYMD(curDate);
-                
-                const box = document.createElement('div');
-                box.className = "border border-gray-200 rounded-2xl overflow-hidden bg-white";
-                
-                const header = document.createElement('div');
-                header.className = "bg-gray-50 border-b border-gray-200 px-4 py-3 font-bold text-gray-800 flex justify-between items-center";
-                header.innerHTML = `<span>${HARI[i]}</span> <span class="text-xs font-semibold bg-white border border-gray-200 px-2 py-1 rounded">${curDate.getDate()} ${BULAN[curDate.getMonth()]}</span>`;
-                box.appendChild(header);
-
-                const body = document.createElement('div');
-                body.className = "p-4 space-y-4";
-                
                 const schedules = SCHEDULE[i];
+
+                let box = `<div class="bg-white/40 backdrop-blur-sm border border-white/60 rounded-2xl overflow-hidden shadow-sm flex flex-col">
+                    <div class="bg-white/50 px-4 py-2 border-b border-white/40 flex justify-between items-center">
+                        <span class="font-bold text-slate-700">${HARI[i]}</span>
+                        <span class="text-[11px] font-bold bg-white/60 px-2 py-1 rounded-lg text-slate-500 border border-white/40">${curDate.getDate()} ${BULAN[curDate.getMonth()]}</span>
+                    </div>
+                    <div class="p-4 space-y-3 flex-1">
+                `;
+                
                 if (schedules && schedules.length > 0) {
                     schedules.forEach(s => {
-                        let content = '';
-                        if (s.type === 'fixed') {
-                            content = `<span class="text-gray-400 text-xs italic font-medium bg-gray-50 px-2 py-1 rounded">Rutin</span>`;
-                        } else {
-                            const saved = (db[curDateStr] && db[curDateStr][s.time]) ? db[curDateStr][s.time] : `<span class="text-red-500 text-xs italic font-semibold">- Belum Diisi -</span>`;
-                            content = (db[curDateStr] && db[curDateStr][s.time]) ? `<span class="font-semibold text-brand-700 text-sm">${saved}</span>` : saved;
-                        }
-
-                        body.innerHTML += `
-                            <div class="pb-3 border-b border-gray-100 last:border-0 last:pb-0">
-                                <div class="flex justify-between items-start mb-1">
-                                    <div class="text-[11px] font-semibold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">${s.time}</div>
-                                    <div class="text-[11px] font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">${s.kelas}</div>
+                        const val = (db[curDateStr] && db[curDateStr][s.time]) ? db[curDateStr][s.time] : (s.type === 'fixed' ? 'Kegiatan Rutin' : '- Belum Diisi -');
+                        const isRed = !db[curDateStr]?.[s.time] && s.type !== 'fixed';
+                        
+                        box += `
+                            <div class="border-b border-white/30 last:border-0 pb-2 last:pb-0">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[10px] font-bold text-slate-500 bg-white/50 px-1.5 py-0.5 rounded">${s.time.split('–')[0]}</span>
+                                    <span class="text-[10px] font-bold text-purple-600 bg-purple-100/50 px-1.5 py-0.5 rounded">${s.kelas}</span>
                                 </div>
-                                <div class="font-bold text-sm text-gray-800 mb-1">${s.title}</div>
-                                <div>${content}</div>
+                                <h4 class="font-bold text-slate-800 text-sm leading-tight">${s.title}</h4>
+                                <p class="text-sm font-medium mt-0.5 ${isRed ? 'text-rose-500 italic' : 'text-slate-600'}">${val}</p>
                             </div>
                         `;
                     });
                 } else {
-                    body.innerHTML = `<div class="text-sm text-gray-400 italic font-medium text-center py-2">Kosong / Libur</div>`;
+                    box += `<div class="text-slate-400 font-medium text-sm italic text-center py-4">Kosong / Libur</div>`;
                 }
-
-                box.appendChild(body);
-                container.appendChild(box);
+                box += `</div></div>`;
+                list.innerHTML += box;
             }
         }
 
         // --- BULANAN ---
         function renderBulanan() {
             const ym = document.getElementById('inputMonthBulanan').value;
-            if (!ym) return;
-            
             const [year, month] = ym.split('-');
-            document.getElementById('bulananTitle').innerText = `Rekap: ${BULAN[parseInt(month)-1]} ${year}`;
+            document.getElementById('bulananTitle').innerText = `${BULAN[parseInt(month)-1]} ${year}`;
             
             const tbody = document.getElementById('bulananTableBody');
             tbody.innerHTML = '';
@@ -636,104 +667,87 @@
                 if (schedules && schedules.length > 0) {
                     schedules.forEach(s => {
                         hasData = true;
-                        let tr = document.createElement('tr');
-                        tr.className = "hover:bg-brand-50 transition border-b border-gray-100 last:border-0";
-                        
-                        let materi = "-";
-                        if (s.type === 'input') {
-                            materi = (db[dateStr] && db[dateStr][s.time]) ? db[dateStr][s.time] : `<span class="text-red-400 italic text-xs font-semibold">Kosong</span>`;
-                        }
+                        let val = (s.type === 'input') ? ((db[dateStr] && db[dateStr][s.time]) ? db[dateStr][s.time] : 'Kosong') : 'Rutin';
+                        let valClass = (s.type === 'input' && db[dateStr] && db[dateStr][s.time]) ? 'text-purple-700 font-bold' : (s.type === 'input'?'text-rose-500 font-medium italic':'text-slate-400 font-medium');
 
-                        tr.innerHTML = `
-                            <td class="p-4 text-sm text-gray-800 font-medium">${dateObj.getDate()} ${BULAN[dateObj.getMonth()]}</td>
-                            <td class="p-4 text-sm text-gray-600"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-semibold">${s.time}</span></td>
-                            <td class="p-4 text-sm text-gray-600"><span class="bg-brand-50 text-brand-700 px-2 py-1 rounded text-xs font-bold">${s.kelas}</span></td>
-                            <td class="p-4 text-sm text-gray-900 font-bold">${s.title}</td>
-                            <td class="p-4 text-sm ${s.type === 'input' && db[dateStr] && db[dateStr][s.time] ? 'text-brand-700 font-bold' : 'text-gray-400'}">${materi}</td>
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-white/20 transition-colors">
+                                <td class="p-4 text-sm font-semibold text-slate-800">${d} ${BULAN[dateObj.getMonth()]}</td>
+                                <td class="p-4 text-sm font-medium text-slate-600"><span class="bg-white/50 px-2 py-1 rounded-lg border border-white/40">${s.time}</span></td>
+                                <td class="p-4 text-sm font-bold text-blue-600 bg-blue-50/30">${s.kelas}</td>
+                                <td class="p-4 text-sm font-bold text-slate-800">${s.title}</td>
+                                <td class="p-4 text-sm ${valClass}">${val}</td>
+                            </tr>
                         `;
-                        tbody.appendChild(tr);
                     });
                 }
             }
-
-            if (!hasData) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500 font-medium">Tidak ada jadwal tercatat di bulan ini.</td></tr>`;
-            }
+            if(!hasData) tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 font-medium italic bg-white/20">Tidak ada jadwal tercatat.</td></tr>`;
         }
 
         // --- PENCARIAN ---
         function performSearch() {
-            const keyword = document.getElementById('inputSearch').value.toLowerCase();
-            const resultContainer = document.getElementById('searchResult');
-            resultContainer.innerHTML = '';
-
-            if (!keyword.trim()) {
-                resultContainer.innerHTML = '<div class="text-gray-400 text-center py-8 font-medium">Silakan masukkan kata kunci.</div>';
+            const key = document.getElementById('inputSearch').value.toLowerCase();
+            const res = document.getElementById('searchResult');
+            res.innerHTML = '';
+            if(!key) {
+                res.innerHTML = '<div class="text-slate-400 text-center py-6 font-medium italic">Ketik untuk mencari materi.</div>';
                 return;
             }
 
-            let foundCount = 0;
-
+            let found = 0;
             for (const [dateStr, times] of Object.entries(db)) {
                 for (const [time, materi] of Object.entries(times)) {
-                    if (materi.toLowerCase().includes(keyword)) {
-                        foundCount++;
-                        const dateObj = new Date(dateStr);
-                        const dayIdx = dateObj.getDay();
+                    if (materi.toLowerCase().includes(key)) {
+                        found++;
+                        const dayIdx = new Date(dateStr).getDay();
+                        const sched = SCHEDULE[dayIdx].find(x => x.time === time);
                         
-                        let classInfo = '';
-                        let actTitle = '';
-                        if(SCHEDULE[dayIdx]) {
-                            const sched = SCHEDULE[dayIdx].find(x => x.time === time);
-                            if(sched) { classInfo = sched.kelas; actTitle = sched.title; }
-                        }
-
-                        resultContainer.innerHTML += `
-                            <div class="bg-white p-5 border border-gray-200 rounded-2xl shadow-sm mb-4">
-                                <div class="flex justify-between items-center mb-3">
-                                    <span class="text-sm font-bold text-brand-700"><i class="far fa-calendar-alt mr-1"></i> ${formatIndo(dateStr)}</span>
-                                    <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">${time} • ${classInfo}</span>
+                        res.innerHTML += `
+                            <div class="bg-white/50 border border-white/60 p-4 rounded-2xl shadow-sm">
+                                <div class="flex justify-between items-center mb-2 border-b border-white/40 pb-2">
+                                    <span class="text-sm font-bold text-purple-600"><i class="far fa-calendar-alt mr-1"></i> ${formatIndo(dateStr)}</span>
+                                    <span class="text-[10px] font-bold text-slate-500 bg-white/60 px-2 py-1 rounded-lg border border-white/40">${time} • ${sched.kelas}</span>
                                 </div>
-                                <p class="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">${actTitle}</p>
-                                <p class="text-gray-900 font-bold text-lg">${materi}</p>
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">${sched.title}</p>
+                                <p class="text-slate-800 font-bold text-lg leading-tight">${materi}</p>
                             </div>
                         `;
                     }
                 }
             }
-
-            if (foundCount === 0) {
-                resultContainer.innerHTML = '<div class="text-red-500 text-center py-6 bg-red-50 rounded-xl border border-red-100 font-semibold">Pencarian tidak menemukan hasil.</div>';
+            if(found === 0) {
+                res.innerHTML = '<div class="bg-rose-100/50 border border-rose-200 p-4 rounded-2xl text-center text-rose-600 font-bold shadow-sm">Materi tidak ditemukan.</div>';
             } else {
-                resultContainer.insertAdjacentHTML('afterbegin', `<div class="text-sm text-brand-700 mb-4 font-bold bg-brand-50 p-3 rounded-xl inline-block">Ditemukan ${foundCount} hasil untuk "${keyword}"</div>`);
+                res.insertAdjacentHTML('afterbegin', `<div class="mb-3 text-sm font-bold text-purple-600 bg-purple-100/50 inline-block px-3 py-1 rounded-lg border border-purple-200/50 shadow-sm">Ditemukan ${found} hasil</div>`);
             }
         }
 
-        // --- PDF EXPORT ---
+        // --- PDF EXPORT (Clean Print Style) ---
         function exportPDF() {
-            const activeTabId = document.querySelector('.tab-content.active').id;
+            const activeTab = document.querySelector('.tab-content.active').id;
             let element, opt;
             
-            if (activeTabId === 'mingguan') {
+            // Note: html2pdf will capture based on @media print CSS rules naturally
+            if (activeTab === 'tab-mingguan') {
                 element = document.getElementById('mingguanPrintArea');
                 opt = {
-                    margin:       0.3,
-                    filename:     `Jurnal_Mingguan_${document.getElementById('inputDateMingguan').value}.pdf`,
+                    margin:       0.4,
+                    filename:     `Mingguan_${document.getElementById('inputDateMingguan').value}.pdf`,
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { scale: 2, useCORS: true },
                     jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
                 };
-            } else if (activeTabId === 'bulanan') {
+            } else if (activeTab === 'tab-bulanan') {
                 element = document.getElementById('bulananPrintArea');
                 opt = {
-                    margin:       0.3,
-                    filename:     `Jurnal_Bulanan_${document.getElementById('inputMonthBulanan').value}.pdf`,
+                    margin:       0.4,
+                    filename:     `Bulanan_${document.getElementById('inputMonthBulanan').value}.pdf`,
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { scale: 2, useCORS: true },
                     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
                 };
             } else {
-                alert("Fitur export PDF hanya tersedia untuk tampilan Mingguan dan Bulanan.");
                 return;
             }
             
@@ -742,5 +756,4 @@
     </script>
 </body>
 </html>
-
 
