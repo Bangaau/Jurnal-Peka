@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JURNAL PEKA - Pembelajaran Keagamaan</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* --- CSS VARIABLES & THEMES --- */
+        :root {
+            --primary: #2E7D32;
+            --secondary: #43A047;
+            --accent: #FFC107;
+            --bg-color: #F5F7FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-muted: #777777;
+            --border: #E0E0E0;
+            --danger: #E53935;
+            --radius: 16px;
+            --shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+            --text-main: #F5F5F5;
+            --text-muted: #AAAAAA;
+            --border: #333333;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); transition: var(--transition); overflow-x: hidden; }
+        button { cursor: pointer; border: none; outline: none; }
+        input, select, textarea { font-family: 'Poppins', sans-serif; }
+        
+        /* --- UTILITIES --- */
+        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 500; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--secondary); box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3); }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-icon { padding: 8px; border-radius: 6px; background: var(--bg-color); color: var(--text-main); }
+        .btn-icon:hover { background: var(--border); }
+        
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .hidden { display: none !important; }
+
+        /* --- FORMS --- */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 14px; color: var(--text-muted); }
+        .form-control { width: 100%; padding: 10px 15px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-color); color: var(--text-main); transition: var(--transition); }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2); outline: none; }
+
+        /* --- TABLES --- */
+        .table-responsive { overflow-x: auto; width: 100%; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: rgba(46, 125, 50, 0.05); color: var(--primary); font-weight: 600; font-size: 14px; }
+        td { font-size: 14px; }
+        tbody tr:hover { background: rgba(0,0,0,0.02); }
+
+        /* --- LOGIN PAGE --- */
+        #login-view { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+        .login-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 40px; border-radius: var(--radius); width: 90%; max-width: 400px; box-shadow: var(--shadow); text-align: center; }
+        [data-theme="dark"] .login-card { background: rgba(30, 30, 30, 0.95); }
+
+        /* --- APP LAYOUT --- */
+        .app-container { display: flex; min-height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--card-bg); box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; z-index: 10; border-right: 1px solid var(--border); transition: var(--transition); }
+        .brand { font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        .nav-menu { list-style: none; flex: 1; }
+        .nav-item { margin-bottom: 5px; }
+        .nav-link { display: flex; align-items: center; gap: 15px; padding: 12px 20px; color: var(--text-muted); text-decoration: none; border-radius: 12px; font-weight: 500; transition: var(--transition); cursor: pointer; }
+        .nav-link:hover, .nav-link.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3); }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; }
+        .header-top { margin-bottom: 30px; }
+        
+        /* Dashboard Stats */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { display: flex; align-items: center; gap: 20px; }
+        .stat-icon { width: 60px; height: 60px; border-radius: 50%; background: rgba(46, 125, 50, 0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+        /* --- MODAL --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: var(--transition); }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--card-bg); width: 90%; max-width: 500px; border-radius: var(--radius); padding: 25px; transform: translateY(-20px); transition: var(--transition); box-shadow: var(--shadow); }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+        /* --- TOAST --- */
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+        .toast { background: var(--card-bg); color: var(--text-main); padding: 15px 25px; border-radius: 8px; box-shadow: var(--shadow); margin-top: 10px; border-left: 4px solid var(--primary); animation: slideIn 0.3s ease-out forwards; display: flex; align-items: center; gap: 10px; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* --- RESPONSIVE MOBILE --- */
+        .bottom-nav { display: none; }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { padding: 15px; padding-bottom: 80px; }
+            .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg); box-shadow: 0 -4px 12px rgba(0,0,0,0.1); justify-content: space-around; padding: 10px 0; z-index: 100; border-top: 1px solid var(--border); }
+            .bottom-nav-item { color: var(--text-muted); text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 12px; cursor: pointer; gap: 4px; }
+            .bottom-nav-item.active { color: var(--primary); font-weight: 600; }
+            .bottom-nav-item i { font-size: 20px; }
+            .dashboard-grid.charts { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. LOGIN VIEW -->
+    <div id="login-view">
+        <div class="login-card">
+            <h2 style="color: var(--primary); margin-bottom: 10px;">
+                <i class="fas fa-book-quran"></i> JURNAL PEKA
+            </h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 14px;">Aplikasi Pembelajaran Keagamaan</p>
+            
+            <form id="loginForm">
+                <div class="form-group" style="text-align: left;">
+                    <label>Email Guru</label>
+                    <input type="email" id="loginEmail" class="form-control" required placeholder="guru@sekolah.com" value="guru@sekolah.com">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" class="form-control" required placeholder="********" value="123456">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">
+                    Masuk Dashboard <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. MAIN APP VIEW -->
+    <div id="app-view" class="app-container hidden">
+        <!-- Sidebar (Desktop) -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fas fa-book-quran"></i> PEKA
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a onclick="App.navigate('dashboard')" id="nav-dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li class="nav-item"><a onclick="App.navigate('siswa')" id="nav-siswa" class="nav-link"><i class="fas fa-users"></i> Data Siswa</a></li>
+                <li class="nav-item"><a onclick="App.showToast('Fitur Kelas sedang dikembangkan', 'info')" class="nav-link"><i class="fas fa-layer-group"></i> Data Kelas</a></li>
+                <li class="nav-item"><a onclick="App.showToast('Fitur Materi sedang dikembangkan', 'info')" class="nav-link"><i class="fas fa-book-open"></i> Materi PAI</a></li>
+                <li class="nav-item"><a onclick="App.showToast('Fitur Penilaian sedang dikembangkan', 'info')" class="nav-link"><i class="fas fa-star"></i> Penilaian</a></li>
+            </ul>
+            <button id="theme-toggle" class="btn" style="background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border); justify-content: center;">
+                <i class="fas fa-moon"></i> Dark Mode
+            </button>
+            <button onclick="Auth.logout()" class="btn" style="background: transparent; color: var(--danger); margin-top: 10px; justify-content: center; border: 1px solid var(--danger);">
+                <i class="fas fa-sign-out-alt"></i> Keluar
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header Global -->
+            <header class="header-top flex-between">
+                <div>
+                    <h1 style="font-size: 22px;">Selamat Datang, <span id="user-name" style="color: var(--primary);">Guru PAI</span></h1>
+                    <p style="color: var(--text-muted); font-size: 14px;"><span id="current-date"></span> | <span id="realtime-clock" style="font-weight:600;"></span></p>
+                </div>
+                <div style="background: var(--card-bg); padding: 8px; border-radius: 50%; box-shadow: var(--shadow);">
+                    <img src="https://ui-avatars.com/api/?name=Guru+PAI&background=2E7D32&color=fff" alt="Profile" style="border-radius: 50%; width: 40px;">
+                </div>
+            </header>
+
+            <!-- SECTION: DASHBOARD -->
+            <section id="section-dashboard">
+                <!-- Stats -->
+                <div class="dashboard-grid">
+                    <div class="card stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div>
+                            <h3 style="font-size: 24px; color: var(--text-main);" id="stat-siswa">0</h3>
+                            <p style="color: var(--text-muted); font-size: 14px;">Total Siswa</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon" style="color: var(--accent); background: rgba(255, 193, 7, 0.1);"><i class="fas fa-star"></i></div>
+                        <div>
+                            <h3 style="font-size: 24px; color: var(--text-main);">24</h3>
+                            <p style="color: var(--text-muted); font-size: 14px;">Penilaian Minggu Ini</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon" style="color: var(--secondary); background: rgba(67, 160, 71, 0.1);"><i class="fas fa-book"></i></div>
+                        <div>
+                            <h3 style="font-size: 24px; color: var(--text-main);">12</h3>
+                            <p style="color: var(--text-muted); font-size: 14px;">Materi Aktif</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="dashboard-grid charts" style="grid-template-columns: 2fr 1fr;">
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px; font-size: 16px;">Grafik Kelancaran Hafalan per Kelas</h3>
+                        <canvas id="hafalanChart" height="120"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px; font-size: 16px;">Pembiasaan Sholat</h3>
+                        <canvas id="sholatChart" height="250"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: DATA SISWA -->
+            <section id="section-siswa" class="hidden">
+                <div class="card">
+                    <div class="flex-between" style="margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                        <h2 style="font-size: 18px;"><i class="fas fa-users" style="color: var(--primary);"></i> Kelola Data Siswa</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="searchSiswa" class="form-control" placeholder="Cari nama/NIS..." onkeyup="Siswa.renderTable()" style="width: 200px;">
+                            <button class="btn btn-primary" onclick="Siswa.openModal()"><i class="fas fa-plus"></i> Tambah</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>NIS</th>
+                                    <th>Nama Lengkap</th>
+                                    <th>L/P</th>
+                                    <th>Kelas</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableSiswaBody">
+                                <!-- Data digenerate via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+        </main>
+
+        <!-- Bottom Nav (Mobile) -->
+        <nav class="bottom-nav">
+            <a onclick="App.navigate('dashboard')" id="mobile-nav-dashboard" class="bottom-nav-item active">
+                <i class="fas fa-home"></i><span>Home</span>
+            </a>
+            <a onclick="App.navigate('siswa')" id="mobile-nav-siswa" class="bottom-nav-item">
+                <i class="fas fa-users"></i><span>Siswa</span>
+            </a>
+            <a onclick="App.showToast('Fitur Penilaian', 'info')" class="bottom-nav-item">
+                <i class="fas fa-star"></i><span>Nilai</span>
+            </a>
+            <a onclick="Auth.logout()" class="bottom-nav-item" style="color: var(--danger);">
+                <i class="fas fa-sign-out-alt"></i><span>Keluar</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- MODAL TAMBAH/EDIT SISWA -->
+    <div id="modalSiswa" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tambah Siswa</h3>
+                <button class="btn-icon" onclick="Siswa.closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="formSiswa">
+                <input type="hidden" id="siswaId">
+                <div class="form-group">
+                    <label>NIS (Nomor Induk Siswa)</label>
+                    <input type="number" id="siswaNis" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" id="siswaNama" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Jenis Kelamin</label>
+                    <select id="siswaJk" class="form-control" required>
+                        <option value="L">Laki-laki (L)</option>
+                        <option value="P">Perempuan (P)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Kelas</label>
+                    <select id="siswaKelas" class="form-control" required>
+                        <option value="Kelas 1">Kelas 1</option>
+                        <option value="Kelas 2">Kelas 2</option>
+                        <option value="Kelas 3">Kelas 3</option>
+                        <option value="Kelas 4">Kelas 4</option>
+                        <option value="Kelas 5">Kelas 5</option>
+                        <option value="Kelas 6">Kelas 6</option>
+                    </select>
+                </div>
+                <div class="flex-between" style="margin-top: 25px;">
+                    <button type="button" class="btn" style="background: var(--border); color: var(--text-main);" onclick="Siswa.closeModal()">Batal</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Container Toast Notifikasi -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- --- JAVASCRIPT LOGIC --- -->
+    <script>
+        /**
+         * 1. DATABASE LOCALSTORAGE HELPER
+         */
+        const DB_PREFIX = 'peka_';
+        const DB = {
+            save: (key, data) => localStorage.setItem(DB_PREFIX + key, JSON.stringify(data)),
+            load: (key) => {
+                const data = localStorage.getItem(DB_PREFIX + key);
+                return data ? JSON.parse(data) : null;
+            },
+            initDummy: () => {
+                if (!DB.load('siswa')) {
+                    DB.save('siswa', [
+                        { id: 1700000001, nis: "1001", nama: "Ahmad Hasan", jk: "L", kelas: "Kelas 1" },
+                        { id: 1700000002, nis: "1002", nama: "Siti Aisyah", jk: "P", kelas: "Kelas 2" },
+                        { id: 1700000003, nis: "1003", nama: "Budi Santoso", jk: "L", kelas: "Kelas 3" },
+                        { id: 1700000004, nis: "1004", nama: "Fatimah Azzahra", jk: "P", kelas: "Kelas 1" }
+                    ]);
+                }
+            }
+        };
+
+        /**
+         * 2. APP GLOBAL LOGIC & UI
+         */
+        let hafalanChartInstance = null;
+        let sholatChartInstance = null;
+
+        const App = {
+            init: () => {
+                DB.initDummy();
+                App.initTheme();
+                App.startClock();
+                
+                // Cek status login
+                if (sessionStorage.getItem('peka_logged_in')) {
+                    App.showApp();
+                }
+
+                // Event listener Form Login
+                document.getElementById('loginForm').addEventListener('submit', Auth.login);
+            },
+
+            // Navigasi SPA (Single Page Application)
+            navigate: (view) => {
+                // Sembunyikan semua section
+                document.getElementById('section-dashboard').classList.add('hidden');
+                document.getElementById('section-siswa').classList.add('hidden');
+                
+                // Hapus active class menu desktop & mobile
+                document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(el => el.classList.remove('active'));
+                
+                // Tampilkan target section & set active menu
+                document.getElementById(`section-${view}`).classList.remove('hidden');
+                document.getElementById(`nav-${view}`).classList.add('active');
+                document.getElementById(`mobile-nav-${view}`).classList.add('active');
+
+                if (view === 'dashboard') Dashboard.init();
+                if (view === 'siswa') Siswa.renderTable();
+            },
+
+            showApp: () => {
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('app-view').classList.remove('hidden');
+                App.navigate('dashboard');
+            },
+
+            // Fitur Dark Mode
+            initTheme: () => {
+                const btn = document.getElementById('theme-toggle');
+                const currentTheme = localStorage.getItem('peka_theme') || 'light';
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                App.updateThemeIcon(btn, currentTheme);
+
+                btn.addEventListener('click', () => {
+                    let theme = document.documentElement.getAttribute('data-theme');
+                    let newTheme = theme === 'light' ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('peka_theme', newTheme);
+                    App.updateThemeIcon(btn, newTheme);
+                    
+                    // Update Chart Colors if rendered
+                    if(hafalanChartInstance) Dashboard.renderCharts(); 
+                });
+            },
+            updateThemeIcon: (btn, theme) => {
+                btn.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i> Light Mode' : '<i class="fas fa-moon"></i> Dark Mode';
+            },
+
+            // Jam & Tanggal
+            startClock: () => {
+                const clockEl = document.getElementById('realtime-clock');
+                const dateEl = document.getElementById('current-date');
+                setInterval(() => {
+                    const now = new Date();
+                    clockEl.innerText = now.toLocaleTimeString('id-ID');
+                    dateEl.innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                }, 1000);
+            },
+
+            // Custom Toast Notification
+            showToast: (msg, type = 'success') => {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+                const color = type === 'error' ? 'var(--danger)' : type === 'info' ? 'var(--accent)' : 'var(--primary)';
+                
+                toast.style.borderLeftColor = color;
+                toast.innerHTML = `<i class="fas ${icon}" style="color:${color}"></i> <span>${msg}</span>`;
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+        };
+
+        /**
+         * 3. AUTHENTICATION
+         */
+        const Auth = {
+            login: (e) => {
+                e.preventDefault();
+                App.showToast("Login Berhasil!", "success");
+                sessionStorage.setItem('peka_logged_in', 'true');
+                setTimeout(() => App.showApp(), 800);
+            },
+            logout: () => {
+                sessionStorage.removeItem('peka_logged_in');
+                document.getElementById('app-view').classList.add('hidden');
+                document.getElementById('login-view').classList.remove('hidden');
+                App.showToast("Berhasil Keluar", "info");
+            }
+        };
+
+        /**
+         * 4. DASHBOARD LOGIC
+         */
+        const Dashboard = {
+            init: () => {
+                const siswaList = DB.load('siswa') || [];
+                document.getElementById('stat-siswa').innerText = siswaList.length;
+                Dashboard.renderCharts();
+            },
+            renderCharts: () => {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const textColor = isDark ? '#AAAAAA' : '#777777';
+                
+                Chart.defaults.color = textColor;
+                Chart.defaults.font.family = "'Poppins', sans-serif";
+
+                // Destroy previous instances to avoid memory leaks/overlap
+                if (hafalanChartInstance) hafalanChartInstance.destroy();
+                if (sholatChartInstance) sholatChartInstance.destroy();
+
+                const ctxH = document.getElementById('hafalanChart').getContext('2d');
+                hafalanChartInstance = new Chart(ctxH, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Kls 1', 'Kls 2', 'Kls 3', 'Kls 4', 'Kls 5', 'Kls 6'],
+                        datasets: [{
+                            label: 'Rata-rata Nilai',
+                            data: [75, 80, 85, 82, 90, 95],
+                            backgroundColor: '#2E7D32',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
+                });
+
+                const ctxS = document.getElementById('sholatChart').getContext('2d');
+                sholatChartInstance = new Chart(ctxS, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Selalu', 'Sering', 'Jarang'],
+                        datasets: [{
+                            data: [65, 25, 10],
+                            backgroundColor: ['#43A047', '#FFC107', '#E53935'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: { responsive: true, cutout: '70%', maintainAspectRatio: false }
+                });
+            }
+        };
+
+        /**
+         * 5. CRUD DATA SISWA LOGIC
+         */
+        const Siswa = {
+            renderTable: () => {
+                const query = document.getElementById('searchSiswa').value.toLowerCase();
+                const data = DB.load('siswa') || [];
+                const tbody = document.getElementById('tableSiswaBody');
+                tbody.innerHTML = '';
+
+                // Filter & Sort by NIS
+                let filteredData = data.filter(s => s.nama.toLowerCase().includes(query) || s.nis.includes(query));
+                filteredData.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama));
+
+                if(filteredData.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Tidak ada data siswa.</td></tr>`;
+                    return;
+                }
+
+                filteredData.forEach((s, index) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td><span style="background: rgba(46,125,50,0.1); color: var(--primary); padding: 2px 8px; border-radius: 4px; font-weight:600;">${s.nis}</span></td>
+                            <td style="font-weight: 500;">${s.nama}</td>
+                            <td>${s.jk}</td>
+                            <td>${s.kelas}</td>
+                            <td>
+                                <button class="btn-icon" style="color: var(--primary);" onclick="Siswa.edit(${s.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon" style="color: var(--danger);" onclick="Siswa.delete(${s.id})" title="Hapus"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            },
+
+            openModal: () => {
+                document.getElementById('formSiswa').reset();
+                document.getElementById('siswaId').value = '';
+                document.getElementById('modalTitle').innerText = 'Tambah Siswa Baru';
+                document.getElementById('modalSiswa').classList.add('active');
+            },
+
+            closeModal: () => {
+                document.getElementById('modalSiswa').classList.remove('active');
+            },
+
+            save: (e) => {
+                e.preventDefault();
+                const id = document.getElementById('siswaId').value;
+                const nis = document.getElementById('siswaNis').value;
+                const nama = document.getElementById('siswaNama').value;
+                const jk = document.getElementById('siswaJk').value;
+                const kelas = document.getElementById('siswaKelas').value;
+
+                let data = DB.load('siswa') || [];
+
+                if (id) {
+                    // Update
+                    const index = data.findIndex(s => s.id == id);
+                    if (index !== -1) {
+                        data[index] = { ...data[index], nis, nama, jk, kelas };
+                        App.showToast("Data siswa diperbarui!", "success");
+                    }
+                } else {
+                    // Cek NIS duplikat
+                    if (data.find(s => s.nis === nis)) {
+                        App.showToast("NIS sudah terdaftar!", "error");
+                        return;
+                    }
+                    // Create
+                    data.push({ id: Date.now(), nis, nama, jk, kelas });
+                    App.showToast("Siswa baru ditambahkan!", "success");
+                }
+
+                DB.save('siswa', data);
+                Siswa.closeModal();
+                Siswa.renderTable();
+                
+                // Update Dashboard Stat if visible
+                const statEl = document.getElementById('stat-siswa');
+                if(statEl) statEl.innerText = data.length;
+            },
+
+            edit: (id) => {
+                const data = DB.load('siswa') || [];
+                const siswa = data.find(s => s.id == id);
+                if (siswa) {
+                    document.getElementById('siswaId').value = siswa.id;
+                    document.getElementById('siswaNis').value = siswa.nis;
+                    document.getElementById('siswaNama').value = siswa.nama;
+                    document.getElementById('siswaJk').value = siswa.jk;
+                    document.getElementById('siswaKelas').value = siswa.kelas;
+                    document.getElementById('modalTitle').innerText = 'Edit Data Siswa';
+                    document.getElementById('modalSiswa').classList.add('active');
+                }
+            },
+
+            delete: (id) => {
+                if(confirm("Apakah Anda yakin ingin menghapus data siswa ini? Data penilaian terkait juga mungkin akan terpengaruh.")) {
+                    let data = DB.load('siswa') || [];
+                    data = data.filter(s => s.id != id);
+                    DB.save('siswa', data);
+                    Siswa.renderTable();
+                    App.showToast("Data siswa dihapus!", "info");
+                    
+                    const statEl = document.getElementById('stat-siswa');
+                    if(statEl) statEl.innerText = data.length;
+                }
+            }
+        };
+
+        // Event Listener Form Siswa
+        document.getElementById('formSiswa').addEventListener('submit', Siswa.save);
+
+        // Init Aplikasi
+        document.addEventListener('DOMContentLoaded', App.init);
+
+    </script>
+</body>
+</html>
+
