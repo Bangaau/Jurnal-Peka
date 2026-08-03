@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jurnal Harian - Glass UI</title>
+    <title>Jurnal Harian - Glass UI Pro</title>
     
     <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -100,9 +100,7 @@
             box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        .glass-button:active {
-            transform: scale(0.96);
-        }
+        .glass-button:active { transform: scale(0.96); }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.4s ease forwards; }
@@ -116,26 +114,28 @@
         ::-webkit-scrollbar { display: none; }
         * { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Print formatting - strip glass effects */
+        /* Print formatting */
         @media print {
             .bg-mesh, .no-print { display: none !important; }
-            body { background: white !important; }
+            body { background: white !important; overflow: auto; }
             .print-area, .print-area * { visibility: visible; color: black !important; }
             #printWrapper { position: absolute; left: 0; top: 0; width: 100%; }
             #harian, #dashboard, #pencarian, nav, header { display: none !important; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2 !important; -webkit-print-color-adjust: exact; }
         }
     </style>
 </head>
-<body class="h-screen flex flex-col text-slate-800">
+<body class="h-screen flex flex-col text-slate-800 relative">
 
-    <!-- Latar Belakang Mesh Gradient -->
     <div class="bg-mesh">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
         <div class="shape shape-3"></div>
     </div>
 
-    <!-- Header Atas (Glass) -->
+    <!-- Header -->
     <header class="glass-panel mx-4 mt-4 rounded-2xl px-5 py-4 flex justify-between items-center z-20 no-print flex-shrink-0">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 flex items-center justify-center text-white shadow-lg">
@@ -144,7 +144,6 @@
             <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-700 to-indigo-700 tracking-tight">JurnalHarian</h1>
         </div>
         
-        <!-- Action Buttons (Export PDF) -->
         <div id="actionButtons" class="hidden gap-2">
             <button onclick="exportPDF()" class="glass-button px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5">
                 <i class="fas fa-file-export"></i> <span>Ekspor PDF</span>
@@ -152,7 +151,7 @@
         </div>
     </header>
 
-    <!-- Area Konten Utama -->
+    <!-- Main Content -->
     <main class="flex-1 overflow-y-auto px-4 pt-6 pb-32 relative z-10 scroll-smooth print-area">
         
         <!-- ================= DASHBOARD ================= -->
@@ -171,25 +170,25 @@
                         <i class="fas fa-calendar-check"></i>
                     </div>
                     <div>
-                        <p class="text-sm font-semibold text-slate-500 mb-1">Materi Bulan Ini</p>
-                        <h3 class="text-3xl font-bold text-slate-800" id="dashTotalBulan">0</h3>
+                        <p class="text-sm font-semibold text-slate-500 mb-1">Total Tersimpan</p>
+                        <h3 class="text-3xl font-bold text-slate-800" id="dashTotalSemua">0</h3>
                     </div>
                 </div>
                 
                 <div class="glass-panel p-6 rounded-3xl flex items-center gap-5 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-300 rounded-full blur-2xl opacity-50"></div>
-                    <div class="w-14 h-14 rounded-2xl bg-white/60 flex items-center justify-center text-purple-600 text-2xl shadow-sm backdrop-blur-md border border-white">
-                        <i class="fas fa-archive"></i>
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-rose-300 rounded-full blur-2xl opacity-50"></div>
+                    <div class="w-14 h-14 rounded-2xl bg-white/60 flex items-center justify-center text-rose-500 text-2xl shadow-sm backdrop-blur-md border border-white">
+                        <i class="fas fa-times-circle"></i>
                     </div>
                     <div>
-                        <p class="text-sm font-semibold text-slate-500 mb-1">Total Disimpan</p>
-                        <h3 class="text-3xl font-bold text-slate-800" id="dashTotalSemua">0</h3>
+                        <p class="text-sm font-semibold text-slate-500 mb-1">Total Dibatalkan</p>
+                        <h3 class="text-3xl font-bold text-slate-800" id="dashTotalBatal">0</h3>
                     </div>
                 </div>
             </div>
 
             <h3 class="text-lg font-bold text-slate-800 mb-4 px-2">Jadwal Cepat Hari Ini</h3>
-            <div class="glass-panel p-2 rounded-3xl" id="dashJadwalHariIni">
+            <div class="glass-panel p-2 rounded-3xl space-y-1" id="dashJadwalHariIni">
                 <!-- Diisi via JS -->
             </div>
         </div>
@@ -204,7 +203,7 @@
                 <input type="date" id="inputDateHarian" class="glass-input rounded-xl p-2.5 text-sm font-semibold w-40 cursor-pointer">
             </div>
 
-            <div id="harianList" class="space-y-4">
+            <div id="harianList" class="space-y-4 pb-4">
                 <!-- Card Glass Harian diisi JS -->
             </div>
         </div>
@@ -231,7 +230,7 @@
             </div>
         </div>
 
-        <!-- ================= BULANAN (UPDATE NO SCROLL / CARD LIST) ================= -->
+        <!-- ================= BULANAN ================= -->
         <div id="tab-bulanan" class="tab-content max-w-3xl mx-auto">
             <div class="glass-panel p-4 rounded-3xl mb-6 flex items-center justify-between no-print">
                 <div class="flex flex-col">
@@ -247,9 +246,8 @@
                     <p class="text-slate-500 font-medium mt-1" id="bulananTitle">Januari</p>
                 </div>
 
-                <!-- MENGGANTI TABEL MENJADI CARD LIST AGAR TIDAK TERPOTONG -->
                 <div id="bulananContainer" class="flex flex-col gap-4">
-                    <!-- Diisi JS dengan Kartu (Card) Responsif -->
+                    <!-- Card List Anti Scroll Terpotong -->
                 </div>
             </div>
         </div>
@@ -258,13 +256,13 @@
         <div id="tab-pencarian" class="tab-content max-w-3xl mx-auto">
             <div class="glass-panel p-2 pl-4 rounded-full mb-6 flex items-center gap-3">
                 <i class="fas fa-search text-slate-400"></i>
-                <input type="text" id="inputSearch" placeholder="Cari materi tersimpan (cth: Wudhu, Sholat...)" class="flex-1 bg-transparent border-none outline-none py-3 text-slate-700 font-medium placeholder-slate-400">
+                <input type="text" id="inputSearch" placeholder="Cari materi/alasan..." class="flex-1 bg-transparent border-none outline-none py-3 text-slate-700 font-medium placeholder-slate-400">
             </div>
             
             <div class="glass-panel rounded-3xl p-6">
                 <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-200/50 pb-2">Hasil Pencarian</h3>
                 <div id="searchResult" class="space-y-4">
-                    <div class="text-slate-400 text-center py-6 font-medium italic">Ketik untuk mencari materi.</div>
+                    <div class="text-slate-400 text-center py-6 font-medium italic">Ketik untuk mencari.</div>
                 </div>
             </div>
         </div>
@@ -307,7 +305,7 @@
         <div class="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center text-white mr-3 text-xs shadow-inner">
             <i class="fas fa-check"></i>
         </div>
-        <span id="toastMsg">Berhasil disimpan!</span>
+        <span id="toastMsg">Tersimpan!</span>
     </div>
 
     <!-- HIDDEN AREA FOR PDF GENERATION (Tabel Formal Cetak) -->
@@ -316,12 +314,12 @@
             <h1 id="printTitle" class="text-2xl font-bold mb-4 text-center border-b pb-4 border-gray-300">Rekap Jurnal</h1>
             <table class="w-full text-left border-collapse mt-4 text-sm">
                 <thead>
-                    <tr class="bg-gray-100">
-                        <th class="border border-gray-300 p-2">Hari/Tanggal</th>
-                        <th class="border border-gray-300 p-2">Waktu</th>
-                        <th class="border border-gray-300 p-2">Kelas</th>
-                        <th class="border border-gray-300 p-2">Kegiatan</th>
-                        <th class="border border-gray-300 p-2">Materi</th>
+                    <tr>
+                        <th>Hari/Tanggal</th>
+                        <th>Waktu</th>
+                        <th>Kelas</th>
+                        <th>Kegiatan</th>
+                        <th>Status / Keterangan</th>
                     </tr>
                 </thead>
                 <tbody id="printBody"></tbody>
@@ -331,7 +329,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Database
+        // Data Structure Migration / Fetch
         let db = JSON.parse(localStorage.getItem('jurnalFasilitator')) || {};
         
         // Data Jadwal
@@ -354,6 +352,8 @@
         const HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         const BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
+        let currentActiveTab = 'harian';
+
         function formatYMD(dateObj) {
             const y = dateObj.getFullYear();
             const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -371,6 +371,7 @@
             const diff = d.getDate() - day + (day === 0 ? -6 : 1);
             return new Date(d.setDate(diff));
         }
+        function getSafeId(str) { return str.replace(/\W/g, ''); }
 
         document.addEventListener("DOMContentLoaded", () => {
             const todayStr = formatYMD(new Date());
@@ -387,8 +388,8 @@
             switchTab('harian'); 
         });
 
-        // --- NAVIGATION ---
         function switchTab(tabId) {
+            currentActiveTab = tabId;
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
             
@@ -440,57 +441,22 @@
             }, 2500);
         }
 
-        // --- CORE DATA ---
-        function saveData(date, time) {
-            const inputEl = document.getElementById(`input_${time}`);
-            const val = inputEl.value.trim();
-            if (!val) { alert("Materi tidak boleh kosong."); inputEl.focus(); return; }
-
-            if (!db[date]) db[date] = {};
-            db[date][time] = val;
-            localStorage.setItem('jurnalFasilitator', JSON.stringify(db));
-            showToast('Materi Disimpan');
-            renderHarian();
-        }
-
-        function deleteData(date, time) {
-            if (confirm("Hapus materi ini?")) {
-                delete db[date][time];
-                if (Object.keys(db[date]).length === 0) delete db[date];
-                localStorage.setItem('jurnalFasilitator', JSON.stringify(db));
-                showToast('Materi Dihapus');
-                renderHarian();
-            }
-        }
-
-        function editData(date, time, oldVal) {
-            const newVal = prompt("Edit Materi Pelajaran:", oldVal);
-            if (newVal !== null) {
-                if(newVal.trim() === '') {
-                    alert("Gunakan tombol hapus jika ingin mengosongkan.");
-                } else {
-                    if (!db[date]) db[date] = {};
-                    db[date][time] = newVal.trim();
-                    localStorage.setItem('jurnalFasilitator', JSON.stringify(db));
-                    renderHarian();
-                }
-            }
-        }
-
         // --- DASHBOARD ---
         function renderDashboard() {
             document.getElementById('dashToday').innerText = formatIndo(formatYMD(new Date()));
-            let countAll = 0; let countMonth = 0;
-            const currentYM = formatYMD(new Date()).substring(0, 7);
+            let countSelesai = 0; let countBatal = 0;
 
             for (const [dateStr, times] of Object.entries(db)) {
-                const count = Object.keys(times).length;
-                countAll += count;
-                if (dateStr.startsWith(currentYM)) countMonth += count;
+                for (const [time, data] of Object.entries(times)) {
+                    // Backward compability check
+                    const status = typeof data === 'object' ? data.status : 'terlaksana';
+                    if(status === 'terlaksana') countSelesai++;
+                    if(status === 'batal') countBatal++;
+                }
             }
             
-            document.getElementById('dashTotalSemua').innerText = countAll;
-            document.getElementById('dashTotalBulan').innerText = countMonth;
+            document.getElementById('dashTotalSemua').innerText = countSelesai;
+            document.getElementById('dashTotalBatal').innerText = countBatal;
 
             const today = new Date();
             const schedules = SCHEDULE[today.getDay()];
@@ -501,26 +467,117 @@
                 dashJadwal.innerHTML = '<div class="text-center py-6 text-slate-500 font-medium">✨ Bebas Tugas! Tidak ada jadwal hari ini. ✨</div>';
             } else {
                 schedules.forEach(s => {
-                    const isFilled = (db[formatYMD(today)] && db[formatYMD(today)][s.time]);
-                    const badge = s.type === 'fixed' 
-                        ? `<span class="bg-white/50 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm">Rutin</span>`
-                        : (isFilled ? `<span class="bg-green-100 text-green-700 border border-green-200 px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm"><i class="fas fa-check"></i> Diisi</span>` 
-                                    : `<span class="bg-rose-100 text-rose-600 border border-rose-200 px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm">Kosong</span>`);
+                    const rawData = (db[formatYMD(today)] && db[formatYMD(today)][s.time]);
+                    let badge = '';
+
+                    if (!rawData) {
+                        badge = `<span class="bg-white/50 text-slate-500 border border-slate-200 px-2 py-1 rounded-lg text-xs font-bold shadow-sm">Kosong</span>`;
+                    } else {
+                        const isObject = typeof rawData === 'object';
+                        const status = isObject ? rawData.status : 'terlaksana';
+                        
+                        if(status === 'terlaksana') {
+                            badge = `<span class="bg-purple-100 text-purple-700 border border-purple-200 px-2 py-1 rounded-lg text-[10px] font-bold shadow-sm"><i class="fas fa-check"></i> Selesai</span>`;
+                        } else {
+                            badge = `<span class="bg-rose-100 text-rose-600 border border-rose-200 px-2 py-1 rounded-lg text-[10px] font-bold shadow-sm"><i class="fas fa-times"></i> Batal</span>`;
+                        }
+                    }
                     
                     dashJadwal.innerHTML += `
-                        <div class="flex justify-between items-center p-4 border-b border-white/40 last:border-0 hover:bg-white/20 transition-colors rounded-2xl">
-                            <div>
-                                <p class="font-bold text-slate-800">${s.title}</p>
-                                <p class="text-xs text-slate-500 font-medium mt-1"><i class="far fa-clock"></i> ${s.time} • ${s.kelas}</p>
+                        <div class="flex justify-between items-center p-3 border-b border-white/40 last:border-0 hover:bg-white/20 transition-colors rounded-2xl">
+                            <div class="pr-2">
+                                <p class="font-bold text-slate-800 text-sm leading-tight">${s.title}</p>
+                                <p class="text-[10px] text-slate-500 font-medium mt-1 uppercase tracking-wider">${s.time} • ${s.kelas}</p>
                             </div>
-                            <div>${badge}</div>
+                            <div class="flex-shrink-0">${badge}</div>
                         </div>
                     `;
                 });
             }
         }
 
-        // --- HARIAN ---
+        // --- HARIAN (INTERACTIVE FORM) ---
+        function selectStatus(timeSafe, status, type) {
+            // Reset Button Styles
+            document.getElementById(`btn_terlaksana_${timeSafe}`).classList.remove('bg-purple-100', 'border-purple-300', 'text-purple-700', 'shadow-inner');
+            document.getElementById(`btn_batal_${timeSafe}`).classList.remove('bg-rose-100', 'border-rose-300', 'text-rose-700', 'shadow-inner');
+            
+            document.getElementById(`btn_terlaksana_${timeSafe}`).classList.add('bg-white/50', 'border-white/60', 'text-slate-500');
+            document.getElementById(`btn_batal_${timeSafe}`).classList.add('bg-white/50', 'border-white/60', 'text-slate-500');
+
+            // Set Active Button
+            if (status === 'terlaksana') {
+                document.getElementById(`btn_terlaksana_${timeSafe}`).classList.remove('bg-white/50', 'border-white/60', 'text-slate-500');
+                document.getElementById(`btn_terlaksana_${timeSafe}`).classList.add('bg-purple-100', 'border-purple-300', 'text-purple-700', 'shadow-inner');
+            } else {
+                document.getElementById(`btn_batal_${timeSafe}`).classList.remove('bg-white/50', 'border-white/60', 'text-slate-500');
+                document.getElementById(`btn_batal_${timeSafe}`).classList.add('bg-rose-100', 'border-rose-300', 'text-rose-700', 'shadow-inner');
+            }
+
+            // Show/Hide Inputs
+            const wrapper = document.getElementById(`form_wrapper_${timeSafe}`);
+            const inputMateri = document.getElementById(`input_materi_${timeSafe}`);
+            const inputAlasan = document.getElementById(`input_alasan_${timeSafe}`);
+            
+            wrapper.classList.remove('hidden');
+            inputMateri.classList.add('hidden');
+            inputAlasan.classList.add('hidden');
+
+            if (status === 'terlaksana' && type === 'input') {
+                inputMateri.classList.remove('hidden');
+                setTimeout(() => inputMateri.focus(), 100);
+            } else if (status === 'batal') {
+                inputAlasan.classList.remove('hidden');
+                setTimeout(() => inputAlasan.focus(), 100);
+            }
+
+            // Save state to button
+            document.getElementById(`btn_save_${timeSafe}`).dataset.status = status;
+        }
+
+        function saveForm(date, time, timeSafe, type) {
+            const btnSave = document.getElementById(`btn_save_${timeSafe}`);
+            const status = btnSave.dataset.status;
+            
+            if(!status) { alert("Silakan pilih status (Terlaksana/Tidak) terlebih dahulu."); return; }
+
+            let text = '';
+            if (status === 'terlaksana' && type === 'input') {
+                text = document.getElementById(`input_materi_${timeSafe}`).value.trim();
+                if(!text) { alert("Kolom Materi Pelajaran tidak boleh kosong."); return; }
+            } else if (status === 'batal') {
+                text = document.getElementById(`input_alasan_${timeSafe}`).value.trim();
+                if(!text) { alert("Kolom Alasan tidak boleh kosong."); return; }
+            }
+
+            if (!db[date]) db[date] = {};
+            db[date][time] = { status: status, text: text };
+            localStorage.setItem('jurnalFasilitator', JSON.stringify(db));
+            
+            showToast('Tersimpan');
+            renderHarian();
+        }
+
+        function deleteForm(date, time) {
+            if(confirm("Hapus rekam jejak jadwal ini?")) {
+                delete db[date][time];
+                if (Object.keys(db[date]).length === 0) delete db[date];
+                localStorage.setItem('jurnalFasilitator', JSON.stringify(db));
+                showToast('Dihapus');
+                renderHarian();
+            }
+        }
+
+        function editInline(timeSafe) {
+            document.getElementById(`saved_view_${timeSafe}`).classList.add('hidden');
+            document.getElementById(`edit_view_${timeSafe}`).classList.remove('hidden');
+        }
+
+        function cancelEdit(timeSafe) {
+            document.getElementById(`saved_view_${timeSafe}`).classList.remove('hidden');
+            document.getElementById(`edit_view_${timeSafe}`).classList.add('hidden');
+        }
+
         function renderHarian() {
             const dateStr = document.getElementById('inputDateHarian').value;
             const isToday = dateStr === formatYMD(new Date());
@@ -541,12 +598,25 @@
             }
 
             schedules.forEach(s => {
+                const safeId = getSafeId(s.time);
+                let rawSaved = (db[dateStr] && db[dateStr][s.time]) ? db[dateStr][s.time] : null;
+                
+                // Normalisasi backward compability
+                let saved = null;
+                if (rawSaved) {
+                    if (typeof rawSaved === 'string') {
+                        saved = { status: (rawSaved === 'Terlaksana' ? 'terlaksana' : 'terlaksana'), text: (rawSaved === 'Terlaksana' ? '' : rawSaved) };
+                    } else {
+                        saved = rawSaved;
+                    }
+                }
+
                 const card = document.createElement('div');
-                card.className = "glass-panel p-5 rounded-3xl overflow-hidden relative";
-                let decor = `<div class="absolute -right-10 -top-10 w-32 h-32 ${s.type==='fixed'?'bg-slate-300':'bg-purple-300'} rounded-full blur-2xl opacity-40 pointer-events-none"></div>`;
+                card.className = "glass-panel p-5 rounded-3xl overflow-hidden relative transition-all";
+                let decor = `<div class="absolute -right-10 -top-10 w-32 h-32 ${s.type==='fixed'?'bg-slate-300':'bg-purple-300'} rounded-full blur-2xl opacity-40 pointer-events-none z-0"></div>`;
 
                 let header = `
-                    <div class="flex justify-between items-start relative z-10">
+                    <div class="flex justify-between items-start relative z-10 mb-3 border-b border-white/30 pb-3">
                         <div>
                             <div class="flex gap-2 mb-2">
                                 <span class="bg-white/60 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-lg shadow-sm border border-white/50">${s.time}</span>
@@ -557,39 +627,78 @@
                     </div>
                 `;
 
-                let content = '';
-                if (s.type === 'fixed') {
-                    content = `<div class="mt-4 pt-3 border-t border-white/30 text-slate-500 font-medium text-sm italic relative z-10"><i class="fas fa-info-circle mr-1"></i> Kegiatan rutin, tidak perlu mengisi materi.</div>`;
-                } else {
-                    const saved = (db[dateStr] && db[dateStr][s.time]) ? db[dateStr][s.time] : '';
-                    if (saved) {
-                        content = `
-                            <div class="mt-4 pt-4 border-t border-white/30 relative z-10">
-                                <div class="bg-white/50 border border-white/60 p-3 rounded-2xl mb-3 shadow-inner">
-                                    <span class="text-[10px] font-bold text-purple-600 uppercase tracking-wider block mb-1">Materi Disimpan</span>
-                                    <p class="font-semibold text-slate-800">${saved}</p>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button onclick="editData('${dateStr}', '${s.time}', '${saved.replace(/'/g, "\\'")}')" class="flex-1 bg-white/70 hover:bg-white text-blue-600 font-bold py-2.5 rounded-xl text-sm transition-all border border-white/50 shadow-sm"><i class="fas fa-edit mr-1"></i> Edit</button>
-                                    <button onclick="deleteData('${dateStr}', '${s.time}')" class="bg-white/70 hover:bg-white text-rose-500 font-bold px-4 py-2.5 rounded-xl text-sm transition-all border border-white/50 shadow-sm"><i class="fas fa-trash-alt"></i></button>
-                                </div>
+                let savedView = '';
+                if (saved) {
+                    let badge = saved.status === 'terlaksana' 
+                        ? `<span class="text-purple-600 bg-purple-100 px-2 py-1 rounded-md text-xs font-bold border border-purple-200"><i class="fas fa-check"></i> Terlaksana</span>`
+                        : `<span class="text-rose-600 bg-rose-100 px-2 py-1 rounded-md text-xs font-bold border border-rose-200"><i class="fas fa-times"></i> Tidak Terlaksana</span>`;
+                    
+                    let contentText = saved.text ? `<p class="font-semibold text-slate-800 text-sm mt-2 p-3 bg-white/50 rounded-xl shadow-inner border border-white">${saved.text}</p>` : '';
+                    let labelText = saved.status === 'batal' ? 'Alasan:' : (s.type === 'input' ? 'Materi:' : '');
+
+                    savedView = `
+                        <div id="saved_view_${safeId}" class="relative z-10">
+                            <div class="mb-4">
+                                ${badge}
+                                ${labelText ? `<span class="text-xs font-bold text-slate-500 uppercase tracking-wider block mt-3">${labelText}</span>` : ''}
+                                ${contentText}
                             </div>
-                        `;
-                    } else {
-                        content = `
-                            <div class="mt-5 relative z-10 flex flex-col sm:flex-row gap-3">
-                                <input type="text" id="input_${s.time}" placeholder="Ketik materi (cth: Wudhu)..." class="glass-input flex-1 rounded-xl px-4 py-3 text-sm font-medium w-full" autocomplete="off">
-                                <button onclick="saveData('${dateStr}', '${s.time}')" class="glass-button px-6 py-3 rounded-xl font-bold text-sm w-full sm:w-auto shadow-lg"><i class="fas fa-save mr-1"></i> Simpan</button>
+                            <div class="flex gap-2">
+                                <button onclick="editInline('${safeId}')" class="flex-1 bg-white/70 hover:bg-white text-blue-600 font-bold py-2.5 rounded-xl text-sm transition-all border border-white/50 shadow-sm"><i class="fas fa-edit mr-1"></i> Edit Data</button>
+                                <button onclick="deleteForm('${dateStr}', '${s.time}')" class="bg-white/70 hover:bg-white text-rose-500 font-bold px-4 py-2.5 rounded-xl text-sm transition-all border border-white/50 shadow-sm"><i class="fas fa-trash-alt"></i></button>
                             </div>
-                        `;
-                    }
+                        </div>
+                    `;
                 }
-                card.innerHTML = decor + header + content;
+
+                let editView = `
+                    <div id="edit_view_${safeId}" class="${saved ? 'hidden' : ''} relative z-10">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pilih Status Pelaksanaan:</p>
+                        <div class="flex gap-2 mb-4">
+                            <button id="btn_terlaksana_${safeId}" onclick="selectStatus('${safeId}', 'terlaksana', '${s.type}')" class="flex-1 bg-white/50 border border-white/60 text-slate-500 font-bold py-2 rounded-xl text-sm transition-all hover:bg-purple-50">
+                                <i class="fas fa-check-circle mr-1"></i> Terlaksana
+                            </button>
+                            <button id="btn_batal_${safeId}" onclick="selectStatus('${safeId}', 'batal', '${s.type}')" class="flex-1 bg-white/50 border border-white/60 text-slate-500 font-bold py-2 rounded-xl text-sm transition-all hover:bg-rose-50">
+                                <i class="fas fa-times-circle mr-1"></i> Tidak / Batal
+                            </button>
+                        </div>
+
+                        <div id="form_wrapper_${safeId}" class="hidden mb-4">
+                            <input type="text" id="input_materi_${safeId}" placeholder="Ketik Materi Pelajaran..." class="glass-input w-full rounded-xl px-4 py-3 text-sm font-medium hidden mb-3" value="${(saved && saved.status === 'terlaksana') ? (saved.text||'') : ''}" autocomplete="off">
+                            <input type="text" id="input_alasan_${safeId}" placeholder="Alasan (Misal: Rapat, Hujan, dll)..." class="glass-input w-full rounded-xl px-4 py-3 text-sm font-medium hidden mb-3" value="${(saved && saved.status === 'batal') ? (saved.text||'') : ''}" autocomplete="off">
+                            
+                            <div class="flex gap-2">
+                                <button id="btn_save_${safeId}" data-status="" onclick="saveForm('${dateStr}', '${s.time}', '${safeId}', '${s.type}')" class="glass-button flex-1 py-3 rounded-xl font-bold text-sm shadow-lg">
+                                    <i class="fas fa-save mr-1"></i> Simpan
+                                </button>
+                                ${saved ? `<button onclick="cancelEdit('${safeId}')" class="bg-white/50 border border-white/60 text-slate-600 font-bold px-4 py-3 rounded-xl text-sm hover:bg-white/70">Batal</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                card.innerHTML = decor + header + savedView + editView;
                 container.appendChild(card);
             });
         }
 
-        // --- MINGGUAN ---
+        // --- MINGGUAN & BULANAN LOGIC ---
+        function generateValHtml(s, dateStr) {
+            let rawData = (db[dateStr] && db[dateStr][s.time]) ? db[dateStr][s.time] : null;
+            if (!rawData) return { html: '<span class="text-slate-400 italic font-medium">- Belum Diisi -</span>', isRed: false };
+
+            let saved = typeof rawData === 'string' 
+                ? { status: rawData === 'Terlaksana' ? 'terlaksana' : 'terlaksana', text: rawData === 'Terlaksana' ? '' : rawData } 
+                : rawData;
+
+            if (saved.status === 'terlaksana') {
+                if(s.type === 'fixed') return { html: '<span class="text-purple-600 font-bold"><i class="fas fa-check-circle mr-1"></i> Terlaksana</span>', isRed: false };
+                else return { html: `<span class="text-purple-700 font-bold">${saved.text}</span>`, isRed: false };
+            } else {
+                return { html: `<span class="text-rose-500 font-bold"><i class="fas fa-times-circle mr-1"></i> Batal: ${saved.text}</span>`, isRed: true };
+            }
+        }
+
         function renderMingguan() {
             const dateStr = document.getElementById('inputDateMingguan').value;
             const startOfWeek = getStartOfWeek(dateStr);
@@ -614,17 +723,15 @@
                 
                 if (schedules && schedules.length > 0) {
                     schedules.forEach(s => {
-                        const val = (db[curDateStr] && db[curDateStr][s.time]) ? db[curDateStr][s.time] : (s.type === 'fixed' ? 'Kegiatan Rutin' : '- Belum Diisi -');
-                        const isRed = !db[curDateStr]?.[s.time] && s.type !== 'fixed';
-                        
+                        let res = generateValHtml(s, curDateStr);
                         box += `
                             <div class="border-b border-white/30 last:border-0 pb-2 last:pb-0">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-[10px] font-bold text-slate-500 bg-white/50 px-1.5 py-0.5 rounded">${s.time.split('–')[0]}</span>
                                     <span class="text-[10px] font-bold text-purple-600 bg-purple-100/50 px-1.5 py-0.5 rounded">${s.kelas}</span>
                                 </div>
-                                <h4 class="font-bold text-slate-800 text-sm leading-tight">${s.title}</h4>
-                                <p class="text-sm font-medium mt-0.5 ${isRed ? 'text-rose-500 italic' : 'text-slate-600'}">${val}</p>
+                                <h4 class="font-bold text-slate-800 text-sm leading-tight mb-1">${s.title}</h4>
+                                <p class="text-sm">${res.html}</p>
                             </div>
                         `;
                     });
@@ -636,7 +743,6 @@
             }
         }
 
-        // --- BULANAN (UPDATE: CARD LAYOUT NO SCROLL) ---
         function renderBulanan() {
             const ym = document.getElementById('inputMonthBulanan').value;
             const [year, month] = ym.split('-');
@@ -659,10 +765,8 @@
                 if (schedules && schedules.length > 0) {
                     schedules.forEach(s => {
                         hasData = true;
-                        let val = (s.type === 'input') ? ((db[dateStr] && db[dateStr][s.time]) ? db[dateStr][s.time] : 'Kosong (Belum Diisi)') : 'Kegiatan Rutin (Otomatis)';
-                        let valClass = (s.type === 'input' && db[dateStr] && db[dateStr][s.time]) ? 'text-purple-700 font-bold' : (s.type === 'input'?'text-rose-500 font-medium italic':'text-slate-500 font-medium italic');
+                        let res = generateValHtml(s, dateStr);
 
-                        // Desain Kartu (Card) menggantikan Tabel
                         container.innerHTML += `
                             <div class="bg-white/40 backdrop-blur-md border border-white/60 p-4 rounded-2xl shadow-sm hover:bg-white/50 transition-colors">
                                 <div class="flex justify-between items-center mb-2 border-b border-white/40 pb-2">
@@ -679,8 +783,8 @@
                                     <p class="font-bold text-slate-800 text-[15px] leading-tight">${s.title}</p>
                                 </div>
                                 <div>
-                                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Materi Tersimpan</p>
-                                    <p class="text-sm ${valClass}">${val}</p>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Status & Keterangan</p>
+                                    <p class="text-sm">${res.html}</p>
                                 </div>
                             </div>
                         `;
@@ -695,40 +799,43 @@
             const key = document.getElementById('inputSearch').value.toLowerCase();
             const res = document.getElementById('searchResult');
             res.innerHTML = '';
-            if(!key) {
-                res.innerHTML = '<div class="text-slate-400 text-center py-6 font-medium italic">Ketik untuk mencari materi.</div>';
-                return;
-            }
+            if(!key) { res.innerHTML = '<div class="text-slate-400 text-center py-6 font-medium italic">Ketik untuk mencari materi/alasan.</div>'; return; }
 
             let found = 0;
             for (const [dateStr, times] of Object.entries(db)) {
-                for (const [time, materi] of Object.entries(times)) {
-                    if (materi.toLowerCase().includes(key)) {
+                for (const [time, rawData] of Object.entries(times)) {
+                    let textToSearch = typeof rawData === 'string' ? rawData : (rawData.text || '');
+                    
+                    if (textToSearch.toLowerCase().includes(key)) {
                         found++;
                         const dayIdx = new Date(dateStr).getDay();
                         const sched = SCHEDULE[dayIdx].find(x => x.time === time);
                         
+                        let badge = (typeof rawData === 'object' && rawData.status === 'batal') 
+                            ? `<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded text-[10px] font-bold border border-rose-200">Batal</span>`
+                            : `<span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[10px] font-bold border border-purple-200">Terlaksana</span>`;
+
                         res.innerHTML += `
                             <div class="bg-white/50 border border-white/60 p-4 rounded-2xl shadow-sm">
                                 <div class="flex justify-between items-center mb-2 border-b border-white/40 pb-2">
                                     <span class="text-sm font-bold text-purple-600"><i class="far fa-calendar-alt mr-1"></i> ${formatIndo(dateStr)}</span>
                                     <span class="text-[10px] font-bold text-slate-500 bg-white/60 px-2 py-1 rounded-lg border border-white/40">${time} • ${sched.kelas}</span>
                                 </div>
-                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">${sched.title}</p>
-                                <p class="text-slate-800 font-bold text-lg leading-tight">${materi}</p>
+                                <div class="flex justify-between items-start mb-1">
+                                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">${sched.title}</p>
+                                    ${badge}
+                                </div>
+                                <p class="text-slate-800 font-bold text-[15px] leading-tight">${textToSearch || 'Kegiatan Rutin'}</p>
                             </div>
                         `;
                     }
                 }
             }
-            if(found === 0) {
-                res.innerHTML = '<div class="bg-rose-100/50 border border-rose-200 p-4 rounded-2xl text-center text-rose-600 font-bold shadow-sm">Materi tidak ditemukan.</div>';
-            } else {
-                res.insertAdjacentHTML('afterbegin', `<div class="mb-3 text-sm font-bold text-purple-600 bg-purple-100/50 inline-block px-3 py-1 rounded-lg border border-purple-200/50 shadow-sm">Ditemukan ${found} hasil</div>`);
-            }
+            if(found === 0) res.innerHTML = '<div class="bg-rose-100/50 border border-rose-200 p-4 rounded-2xl text-center text-rose-600 font-bold shadow-sm">Pencarian tidak menemukan hasil.</div>';
+            else res.insertAdjacentHTML('afterbegin', `<div class="mb-3 text-sm font-bold text-purple-600 bg-purple-100/50 inline-block px-3 py-1 rounded-lg border border-purple-200/50 shadow-sm">Ditemukan ${found} hasil</div>`);
         }
 
-        // --- PDF EXPORT (Cerdas: Output PDF tetap dalam bentuk Tabel Formal) ---
+        // --- PDF EXPORT ---
         function buildPrintHTML(type) {
             const tbody = document.getElementById('printBody');
             tbody.innerHTML = '';
@@ -760,15 +867,26 @@
                 const schedules = SCHEDULE[item.dayIdx];
                 if(schedules) {
                     schedules.forEach(s => {
-                        let materi = s.type === 'fixed' ? '-' : ((db[item.dateStr] && db[item.dateStr][s.time]) ? db[item.dateStr][s.time] : '');
-                        // Isi tabel rahasia untuk di-print
+                        let rawData = (db[item.dateStr] && db[item.dateStr][s.time]) ? db[item.dateStr][s.time] : null;
+                        let outputTxt = '-';
+                        
+                        if (rawData) {
+                            let saved = typeof rawData === 'string' ? { status: rawData==='Terlaksana'?'terlaksana':'terlaksana', text: rawData==='Terlaksana'?'':rawData } : rawData;
+                            
+                            if (saved.status === 'terlaksana') {
+                                outputTxt = s.type === 'fixed' ? 'Terlaksana' : `Terlaksana - Materi: ${saved.text}`;
+                            } else {
+                                outputTxt = `TIDAK TERLAKSANA (Alasan: ${saved.text})`;
+                            }
+                        }
+
                         tbody.innerHTML += `
                             <tr>
-                                <td class="border border-gray-300 p-2">${HARI[item.dayIdx]}, ${item.dateObj.getDate()} ${BULAN[item.dateObj.getMonth()]}</td>
-                                <td class="border border-gray-300 p-2">${s.time}</td>
-                                <td class="border border-gray-300 p-2">${s.kelas}</td>
-                                <td class="border border-gray-300 p-2">${s.title}</td>
-                                <td class="border border-gray-300 p-2 font-semibold">${materi}</td>
+                                <td>${HARI[item.dayIdx]}, ${item.dateObj.getDate()} ${BULAN[item.dateObj.getMonth()]}</td>
+                                <td>${s.time}</td>
+                                <td>${s.kelas}</td>
+                                <td>${s.title}</td>
+                                <td>${outputTxt}</td>
                             </tr>
                         `;
                     });
@@ -784,13 +902,8 @@
             else if (activeTab === 'tab-bulanan') type = 'bulanan';
             else return;
 
-            // 1. Bangun tabel di background
             buildPrintHTML(type);
-
-            // 2. Targetkan area Print
             const element = document.getElementById('printArea');
-            
-            // 3. Tampilkan sebentar agar terdeteksi PDF maker
             document.getElementById('pdfWrapper').classList.remove('hidden');
             
             const opt = {
@@ -802,7 +915,6 @@
             };
             
             html2pdf().set(opt).from(element).save().then(() => {
-                // 4. Sembunyikan kembali
                 document.getElementById('pdfWrapper').classList.add('hidden');
                 showToast('Mulai mengunduh PDF...');
             });
